@@ -63,7 +63,7 @@ const dummyProducts = [
 const AddReservation = ({ onBack }) => {
   const navigate = useNavigate();
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [location, setLocation] = useState("LIV Durban");
+  const [location, setLocation] = useState("KZN");
 
   const handleNavigateTo = (path) => {
     navigate(path);
@@ -88,7 +88,7 @@ const AddReservation = ({ onBack }) => {
         .filter((product) => selectedProducts.includes(product.id))
         .map((product) => ({
           ...product,
-          quantity: 1, // Assume quantity is 1 for simplicity
+          quantity: 1, 
         })),
     };
     console.log("reservation", reservation);
@@ -121,7 +121,7 @@ const AddReservation = ({ onBack }) => {
             onChange={handleLocationChange}
             size="small"
           >
-            <MenuItem value={"LIV Durban"}>LIV Durban</MenuItem>
+            <MenuItem value={"KZN"}>KZN</MenuItem>
             <MenuItem value={"LIV Cape Town"}>LIV Cape Town</MenuItem>
             <MenuItem value={"LIV Johannesburg"}>LIV Johannesburg</MenuItem>
           </Select>
