@@ -7,6 +7,7 @@ import {
   Menu,
   MenuItem,
   Box,
+  Container
 } from "@mui/material";
 //import MenuIcon from '@mui/material/MenuIcon'
 import MenuIcon from "@mui/icons-material/Menu"; //'@mui/icons-material/Menu' vs "@material-ui/icons/Menu"
@@ -28,6 +29,7 @@ import AddReservation from "../pages/Reservations/AddReservation.jsx";
 import ConfirmReservation from "../pages/Reservations/ConfirmReservation.jsx";
 import Products from "../pages/Products/Products.jsx";
 import SignIn from "../pages/SignIn.jsx";
+import CreateNewPassword from "../pages/CreateNewPassword.jsx";
 import { useAuth } from "../context/AuthContext"
 
 const Layout = ({ children }) => {
@@ -136,12 +138,13 @@ const Layout = ({ children }) => {
           width: "100%",
           margin: "0 auto",
           overflowY: "auto",
-          maxWidth: '1200px'
+          //maxWidth: '1200px'
         }}
       >
         <Routes>
           <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/create-new-password" element={<CreateNewPassword />} />
           <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/signin" />} />
           <Route path="/reservations" element={isAuthenticated ? <Reservations /> : <Navigate to="/signin" />} />
           <Route path="/reservations/:id" element={isAuthenticated ? <ReservationDetails /> : <Navigate to="/signin" />} />

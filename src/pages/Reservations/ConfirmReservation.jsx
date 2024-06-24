@@ -10,6 +10,9 @@ const ConfirmReservation = () => {
 
   const handleReserve = () => {
     console.log("Reservation confirmed", reservation);
+    //todo supply reserved products id to requests responsible for creating a order with products supplied, as well as 
+    // the required id of the linked customer (linked in user's shopify customer id or similar) to create order
+    //return 200 ok once confirmed. redirect to reservations
   
   };
 
