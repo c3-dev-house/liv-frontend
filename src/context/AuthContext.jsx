@@ -10,6 +10,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  
 
   const login = (username, password) => {
     const user = dummyUsers.find(
@@ -51,7 +52,8 @@ export const AuthProvider = ({ children }) => {
   const value = {
     isAuthenticated,
     setIsAuthenticated,
-    currentUser, 
+    currentUser,
+    setCurrentUser,  
     login, 
     logout
   };

@@ -144,19 +144,19 @@ const ProductCard = ({ product, onAddItem, onEditItem }) => {
               >
                 <Typography
                   variant="body2"
-                  sx={{ flex: "1 1 30%", textAlign: "left" }}
+                  sx={{ flex: "1 1 25%", textAlign: "left", fontSize: { xs: '0.65rem', sm: '0.65rem', lg: '0.65rem' }}}
                 >
                   {item.date}
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ flex: "1 1 40%", textAlign: "left" ,  ml: 1 }}
+                  sx={{ flex: "1 1 45%", textAlign: "left" ,  ml: 1, fontSize: { xs: '0.65rem', sm: '0.65rem', lg: '0.65rem' }}}
                 >
                   {item.quantity} {item.description}
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ flex: "1 1 30%", textAlign: "right",  ml: 1 }}
+                  sx={{ flex: "1 1 35%", textAlign: "right",  ml: 1, fontSize: { xs: '0.65rem', sm: '0.65rem', lg: '0.65rem'} }}
                 >
                   R {item.salesPrice.toFixed(2)}
                 </Typography>

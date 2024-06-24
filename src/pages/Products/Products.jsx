@@ -59,7 +59,7 @@ const Products = () => {
           id: 1,
           date: "2025/05/20",
           quantity: 3,
-          description: "T-Shirt",
+          description: "T-Shirt", 
           salesPrice: 25.00,
         },
         {
@@ -116,6 +116,7 @@ const Products = () => {
     console.log('edit item clicked');
     console.log(product);
     console.log(updatedItem);
+    //post query item id = id -> 
   };
 
   return (

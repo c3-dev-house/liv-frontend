@@ -17,46 +17,52 @@ import ProductCard from "../../components/reservations/ProductCard";
 
 const dummyProducts = [
   {
-    id: "B-0001",
-    title: "Men's clothes bundle",
+    id: "B-0001", //title in backend
+    body_html: "Men's clothes bundle",
     date: "20/05/2024",
     price: 300,
     location: "LIV DBN",
+    contents: "10 items"
   },
   {
     id: "B-0002",
-    title: "Babies clothes bundle",
+    body_html: "Babies clothes bundle",
     date: "20/05/2024",
     price: 300,
     location: "LIV DBN",
+    contents: "10 items"
   },
   {
     id: "B-0003",
-    title: "Young male clothes bundle",
+    body_html: "Young male clothes bundle",
     date: "20/05/2024",
     price: 300,
     location: "LIV DBN",
+    contents: "10 items"
   },
   {
     id: "B-0004",
-    title: "Women's clothes bundle",
+    body_html: "Women's clothes bundle",
     date: "20/05/2024",
     price: 300,
     location: "LIV DBN",
+    contents: "10 items"
   },
   {
     id: "B-0005",
-    title: "Young female clothes bundle",
+    body_html: "Young female clothes bundle",
     date: "20/05/2024",
     price: 300,
     location: "LIV DBN",
+    contents: "10 items"
   },
   {
     id: "B-0006",
-    title: "Men's clothes bundle",
+    body_html: "Men's clothes bundle",
     date: "20/05/2024",
     price: 300,
     location: "LIV DBN",
+    contents: "10 items",
   },
 ];
 
