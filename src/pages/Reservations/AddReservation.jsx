@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "../../axiosConfig";
 import { useNavigate } from "react-router-dom";
 import {
   Toolbar,
@@ -17,51 +18,57 @@ import ProductCard from "../../components/reservations/ProductCard";
 
 const dummyProducts = [
   {
-    id: "B-0001", //title in backend
+    id: 1,
+    title: "B-0001", //title in backend
     body_html: "Men's clothes bundle",
-    date: "20/05/2024",
+    createdAt: "20/05/2024",
     price: 300,
-    location: "LIV DBN",
+    location: "KZN",
     contents: "10 items"
   },
   {
-    id: "B-0002",
+    id: 2,
+    title: "B-0002",
     body_html: "Babies clothes bundle",
-    date: "20/05/2024",
+    createdAt: "20/05/2024",
     price: 300,
-    location: "LIV DBN",
+    location: "KZN",
     contents: "10 items"
   },
   {
-    id: "B-0003",
+    id: 3,
+    title: "B-0003",
     body_html: "Young male clothes bundle",
-    date: "20/05/2024",
+    createdAt: "20/05/2024",
     price: 300,
-    location: "LIV DBN",
+    location: "KZN",
     contents: "10 items"
   },
   {
-    id: "B-0004",
+    id: 4,
+    title: "B-0004",
     body_html: "Women's clothes bundle",
-    date: "20/05/2024",
+    createdAt: "20/05/2024",
     price: 300,
-    location: "LIV DBN",
+    location: "KZN",
     contents: "10 items"
   },
   {
-    id: "B-0005",
+    id: 5,
+    title: "B-0005",
     body_html: "Young female clothes bundle",
-    date: "20/05/2024",
+    createdAt: "20/05/2024",
     price: 300,
-    location: "LIV DBN",
+    location: "KZN",
     contents: "10 items"
   },
   {
-    id: "B-0006",
+    id: 6,
+    title: "B-0006",
     body_html: "Men's clothes bundle",
-    date: "20/05/2024",
+    createdAt: "20/05/2024",
     price: 300,
-    location: "LIV DBN",
+    location: "KZN",
     contents: "10 items",
   },
 ];
@@ -70,6 +77,36 @@ const AddReservation = ({ onBack }) => {
   const navigate = useNavigate();
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [location, setLocation] = useState("KZN");
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const vendor = "KZN"; // You can change this value or make it dynamic based on your requirements
+        const response = await axios.get(`/api/products/vendor-products?vendor=${vendor}`);
+        console.log('Fetched products:', response.data);
+
+        const activeProducts = response.data
+          .filter(product => product.status === 'active')
+          .map(product => ({
+            id: product.id,
+            title: product.title,
+            bodyHtml: product.bodyHtml,
+            createdAt: product.createdAt,
+            price: product.variants[0].price,
+            variantId: product.variants[0].id,
+            location: product.vendor,
+          }));
+          console.log("activeProducts");
+          console.log(activeProducts);
+        setProducts(activeProducts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleNavigateTo = (path) => {
     navigate(path);
@@ -90,7 +127,7 @@ const AddReservation = ({ onBack }) => {
   const handlePlaceOrder = () => {
     const reservation = {
       location,
-      contents: dummyProducts
+      contents: products
         .filter((product) => selectedProducts.includes(product.id))
         .map((product) => ({
           ...product,
@@ -138,7 +175,7 @@ const AddReservation = ({ onBack }) => {
         <Box
           sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
         >
-          {dummyProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard
               key={product.id}
               product={product}

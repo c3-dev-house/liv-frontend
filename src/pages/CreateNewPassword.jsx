@@ -13,6 +13,7 @@ const CreateNewPassword = () => {
     e.preventDefault();
     if (validatePassword(password)) {
       // Logic for updating the password
+      //todo api salesforce call
       // On success:
       const updatedUser = { ...currentUser, password: password };
       console.log('updatedUser', updatedUser);
