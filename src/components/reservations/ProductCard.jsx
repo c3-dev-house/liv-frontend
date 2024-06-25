@@ -26,17 +26,17 @@ const ProductCard = ({ product, selected, onSelect }) => {
           "&:last-child": { paddingBottom: "8px" }, // Ensure no extra padding at the bottom
         }}>
         <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-          {product.body_html}
+          {product.bodyHtml}
         </Typography>
-        {/*
+        
         <Typography
           variant="body2"
           color="text.secondary"
           sx={{ textAlign: "center" }}
         >
-          {product.date}
+          {product.title}
         </Typography>
-        */}
+        
         <Box
           sx={{
             display: "flex",
@@ -62,7 +62,7 @@ const ProductCard = ({ product, selected, onSelect }) => {
           color="text.secondary"
           sx={{ textAlign: "center" }}
         >
-          {product.contents}
+          {product.createdAt}
         </Typography>
         <Typography
           variant="body2"
