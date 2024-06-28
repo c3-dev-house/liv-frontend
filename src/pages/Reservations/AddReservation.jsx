@@ -78,6 +78,7 @@ const AddReservation = ({ onBack }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [location, setLocation] = useState("KZN");
   const [products, setProducts] = useState([]);
+  const [customerId, setCustomerId] = useState("7024877994031");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -126,6 +127,7 @@ const AddReservation = ({ onBack }) => {
 
   const handlePlaceOrder = () => {
     const reservation = {
+      customerId,
       location,
       contents: products
         .filter((product) => selectedProducts.includes(product.id))

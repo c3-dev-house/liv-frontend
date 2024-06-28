@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -11,60 +11,26 @@ import {
 } from "@mui/material";
 import ReservationsHeader from "../../components/reservations/ReservationsHeader";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import axios from "../../axiosConfig";
 
 const Reservations = () => {
   const navigate = useNavigate();
+  const [reservations, setReservations] = useState([]);
 
-  const [reservations, setReservations] = useState([
-    {
-      id: 1,
-      date: "15/05/2025",
-      time: "08:45:15am",
-      items: 2,
-      products: [
-        { id: "B-0001", title: "Men's clothes bundle", price: 300 },
-        { id: "B-0002", title: "Babies clothes bundle", price: 300 },
-      ],
-      location: "LIV DBN"
-    },
-    {
-      id: 2,
-      date: "15/05/2025",
-      time: "08:45:15am",
-      items: 2,
-      products: [
-        { id: "B-0001", title: "Men's clothes bundle", price: 300 },
-        { id: "B-0002", title: "Babies clothes bundle", price: 300 },
-      ],
-      location: "LIV DBN"
-    },
-    {
-      id: 3,
-      date: "15/05/2025",
-      time: "08:45:15am",
-      items: 2,
-      products: [
-        { id: "B-0001", title: "Men's clothes bundle", price: 300 },
-        { id: "B-0002", title: "Babies clothes bundle", price: 300 },
-      ],
-      location: "LIV DBN"
-    },
-    {
-      id: 4,
-      date: "15/05/2025",
-      time: "08:45:15am",
-      items: 2,
-      products: [
-        { id: "B-0001", title: "Men's clothes bundle", price: 300 },
-        { id: "B-0002", title: "Babies clothes bundle", price: 300 },
-      ],
-      location: "LIV DBN"
-    },
-  ]);
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        const customerId = "7024877994031"; // hardcoded on Grace for now
+        const response = await axios.get(`/api/orders/customer-orders/${customerId}`);
+        console.log("Fetched reservations:", response.data.orders);
+        setReservations(response.data.orders);
+      } catch (error) {
+        console.error("Error fetching reservations:", error);
+      }
+    };
 
-  const handleAddReservation = () => {
-    console.log("add reservation clicked");
-  };
+    fetchReservations();
+  }, []);
 
   const handleNavigateTo = (path) => {
     navigate(path);
