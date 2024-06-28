@@ -1,7 +1,8 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import { useParams, useNavigate} from "react-router-dom";
 import { Box, Typography, Paper, Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import axios from "../../axiosConfig";
 
 
 const dummyReservations = [
@@ -20,13 +21,45 @@ const dummyReservations = [
 
 const ReservationDetails = () => {
   const { id } = useParams();
-  const reservationId = parseInt(id, 10);
-  console.log(id);
-  const reservation = dummyReservations.find((res) => res.id === reservationId);
-  console.log(reservation);
-  if (!reservation) {
-    return <Typography variant="h6">Reservation not found</Typography>;
+  const [reservation, setReservation] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const fetchReservation = async () => {
+      try {
+        const response = await axios.get(`/api/orders/${id}`);
+        console.log("response.data");
+        console.log(response.data);
+        setReservation(response.data.order);
+      } catch (error) {
+        console.error("Error fetching reservation:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReservation();
+  }, [id]);
+
+  const handleCancelOrder = async () => {
+    try {
+      const productIds = reservation.products.map((product) => product.id);
+      await axios.post(`/api/orders/cancel`, {
+        orderId: reservation.id,
+        productIds,
+      });
+      navigate("/reservations"); 
+    } catch (error) {
+      console.error("Error canceling order:", error);
+    }
+  };
+
+  if (isLoading) {
+    return <Typography variant="h6">Loading...</Typography>;
   }
+
 
   return (
     <Box
@@ -70,13 +103,13 @@ const ReservationDetails = () => {
         <Typography variant="body1" sx={{ marginTop: 2 }}>
           Contents:
         </Typography>
-        {reservation.products.map((item, index) => (
+        {reservation.products && reservation.products.map((item, index) => (
           <Box
             key={index}
             sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
           >
             <Typography variant="body2">
-              {item.id} {item.title}
+              {item.createdAt} {item.title}
             </Typography>
             <Typography variant="body2">R {item.price.toFixed(2)}</Typography>
           </Box>
@@ -87,12 +120,20 @@ const ReservationDetails = () => {
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: "bold" }}>
             R{" "}
-            {reservation.products
+            {reservation.products && reservation.products
               .reduce((total, item) => total + item.price, 0)
               .toFixed(2)}
           </Typography>
         </Box>
       </Paper>
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ mt: 2 }}
+        onClick={handleCancelOrder}
+      >
+        Cancel Order
+      </Button>
     </Box>
   );
 };
