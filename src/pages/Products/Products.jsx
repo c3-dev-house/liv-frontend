@@ -1,100 +1,44 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
+import axios from "../../axiosConfig";
 import { Typography, Box, Container, Grid } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProductsHeader from "../../components/products/ProductsHeader";
 import ProductCard from "../../components/products/ProductCard";
 
 const Products = () => {
-  const [products, setProducts] = useState([
-    {
-      date: "15/05/2025",
-      time: "08:45:15am",
-      title: "Babies Clothes Bundle",
-      costPrice: 300.0,
-      items: [
-        {
-          id: 1,
-          date: "2024/05/16",
-          quantity: 1,
-          description: "White shirt",
-          salesPrice: 56.0,
-        },
-        {
-          id: 2,
-          date: "2024/05/16",
-          quantity: 2,
-          description: "One piece",
-          salesPrice: 50.0,
-        },
-        {
-          id: 3,
-          date: "2024/05/16",
-          quantity: 1,
-          description: "Hat",
-          salesPrice: 50.0,
-        },
-        {
-          id: 4,
-          date: "2024/05/16",
-          quantity: 8,
-          description: "Socks",
-          salesPrice: 10.0,
-        },
-        {
-          id: 5,
-          date: "2024/05/16",
-          quantity: 1,
-          description: "Comforter",
-          salesPrice: 70.0,
-        },
-      ],
-    },
-    {
-      date: "20/06/2025",
-      time: "10:30:45am",
-      title: "Male Clothes Bundle",
-      costPrice: 300.00,
-      items: [
-        {
-          id: 1,
-          date: "2025/05/20",
-          quantity: 3,
-          description: "T-Shirt", 
-          salesPrice: 25.00,
-        },
-        {
-          id: 2,
-          date: "2025/05/20",
-          quantity: 1,
-          description: "Shorts",
-          salesPrice: 45.00,
-        },
-        {
-          id: 3,
-          date: "2025/05/20",
-          quantity: 1,
-          description: "Jacket",
-          salesPrice: 120.00,
-        },
-        {
-          id: 4,
-          date: "2025/05/20",
-          quantity: 1,
-          description: "Sandals",
-          salesPrice: 30.00,
-        },
-        {
-          id: 5,
-          date: "2025/05/20",
-          quantity: 1,
-          description: "Hat",
-          salesPrice: 60.0,
-        },
-      ],
-    }
-    
-  ]);
+  const [products, setProducts] = useState([]);
+  const [fetchTrigger, setFetchTrigger] = useState(false);
+  const [clothingBundleId,setClothingBundleId]=useState('');
 
+  useEffect(() => {
+    const fetchBeneficiarySales = async () => {
+      try {
+        const customerId = "7024877994031"; // hardcoded on Grace for now
+        // const response = await axios.get(`/api/products/owned-products/${customerId}`);
+        const response = await axios.get(`/api/products/owned-products`);
+        // console.log('Fetched products:', response.data);
+
+        const { orders } = response.data;
+        const soldProducts = response.data.map(product => ({
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          createdAt: product.items.createdAt, //undefined
+          location: product.location,
+          orderDate: product.date,
+          orderTime: product.time,
+          items: product.items
+        }));
+          // console.log("soldProducts");
+          // console.log(soldProducts);
+          setProducts(soldProducts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchBeneficiarySales();
+  }, [fetchTrigger]);
   const handleSortProducts = () => {
     console.log("sort clicked");
   };
@@ -103,20 +47,37 @@ const Products = () => {
     console.log("filter clicked");
   };
 
-  const handleAddItem = (product, newItem) => {
+  const handleAddItem = async (product, newItem) => {
     const maxId = product.items.length ? Math.max(...product.items.map(item => parseInt(item.id, 10))) : 0;
     const newId = maxId + 1;
     newItem.id = newId;
-    console.log('add item clicked');
-    console.log(product);
-    console.log(newItem);
+    // let clothingBundleId = product.items[0].Clothing_Bundles_Id__c;
+    // const clothingBundle = await axios.get(`/api/products/owned-products`);
+    // let clothingBundleId = clothingBundle.data[0].clothingBundlesId;
+
+    const response = await axios.post(`/api/items/addItem/${clothingBundleId}`,newItem);
+    // console.log('Fetched products:', response.data);
+    // console.log('add item clicked');
+
+    // console.log(newItem);
+    // Trigger re-fetch
+    setFetchTrigger(prev => !prev);
   };
 
-  const handleEditItem = (product, updatedItem) => {
-    console.log('edit item clicked');
-    console.log(product);
-    console.log(updatedItem);
-    //post query item id = id -> 
+  const handleEditItem = async (item, updatedItem) => {
+    await axios.patch(`/api/items/updateItem/${item}`,updatedItem);
+    // console.log('edit item clicked');
+    // console.log(item);
+    // console.log(updatedItem);
+    // Trigger re-fetch
+    setFetchTrigger(prev => !prev);
+  };
+  const handleDeleteItem = async (item) => {
+    await axios.delete(`/api/items/deleteItem/${item}`);
+    // console.log('delete item clicked');
+    // console.log(item);
+    // Trigger re-fetch
+    setFetchTrigger(prev => !prev);
   };
 
   return (
@@ -142,6 +103,8 @@ const Products = () => {
               product={product}
               onAddItem={handleAddItem}
               onEditItem={handleEditItem}
+              onDeleteItem={handleDeleteItem}
+              setClothingBundleId={setClothingBundleId}
             />
           </Grid>
         ))}

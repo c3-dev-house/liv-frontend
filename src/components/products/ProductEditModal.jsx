@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, B
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from '@mui/material/styles';
 
-const ProductEditModal = ({ open, onClose, onSubmit, initialData, isAdd }) => {
+const ProductEditModal = ({ open, onClose, onSubmit, initialData, isAdd,setIsDelete }) => {
   const theme = useTheme();
   const [formData, setFormData] = useState({
     quantity: '',
@@ -14,9 +14,9 @@ const ProductEditModal = ({ open, onClose, onSubmit, initialData, isAdd }) => {
   useEffect(() => {
     if (initialData) {
       setFormData({
-        quantity: initialData.quantity,
-        description: initialData.description,
-        salesPrice: initialData.salesPrice,
+        quantity: initialData.Quantity__c,
+        description: initialData.Description__c,
+        salesPrice: initialData.Sales_Price__c,
       });
     } else {
       setFormData({
@@ -109,7 +109,7 @@ const ProductEditModal = ({ open, onClose, onSubmit, initialData, isAdd }) => {
         )}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {initialData && (
-            <IconButton color="primary">
+            <IconButton color="primary" onClick={() => setIsDelete(true)}>
               <DeleteIcon />
             </IconButton>
           )}
