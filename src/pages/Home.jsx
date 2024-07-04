@@ -1,14 +1,41 @@
-import React from 'react';
+import React,{ useState,useEffect } from 'react';
+import axios from "../axiosConfig";
 import { Box, Typography, Paper, Grid, Link } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 const Home = () => {
-  const theme = useTheme();
-  const profit = 56.00;
-  const cost = 300.00;
-  const sales = 356.00;
-  const profitPercentage = ((profit / sales) * 100).toFixed(2);
+  const [beneficiaryOverview,setBeneficiaryOverview]=useState([]);
+  const [profitPercentage, setProfitPercentage] = useState(null);
 
+  const theme = useTheme();
+  // const profit = 56.00;
+  // const cost = 300.00;
+  // const sales = 356.00;
+
+  useEffect(() => {
+    const fetchBeneficiaryOverview = async () => {
+      try {
+        const salesforceId = "a01Ad00000Y05MAIAZ"; // hardcoded on Grace for now
+        // const response = await axios.get(`/api/products/owned-products/${customerId}`);
+        const response = await axios.get(`api/overview/beneficiarySales/${salesforceId}`);
+        // console.log('Fetched products:', response.data);
+
+        
+        const overview = response.data;
+        console.log(overview);
+        setBeneficiaryOverview(overview);
+
+          if (overview && overview.totalSales !== 0) {
+            const percentage = ((overview.totalProfit  / overview.totalSales) * 100).toFixed(2);
+            setProfitPercentage(percentage);
+          }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchBeneficiaryOverview();
+  }, []);
   return (
     <Box sx={{ width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
       <Typography variant="h5" gutterBottom>
@@ -22,9 +49,9 @@ const Home = () => {
             <Typography variant="body1">Sales:</Typography>
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'right' }}>
-            <Typography variant="body1" sx={{ color: theme.palette.green.main }}>+ R 56.00</Typography>
-            <Typography variant="body1" >- R 300.00</Typography>
-            <Typography variant="body1" >+ R 356.00</Typography>
+            <Typography variant="body1" sx={{ color: theme.palette.green.main }}>R {beneficiaryOverview.totalProfit}</Typography>
+            <Typography variant="body1" >- R {beneficiaryOverview.costOfGoods}</Typography>
+            <Typography variant="body1" >+ R {beneficiaryOverview.totalSales}</Typography>
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'center', justifyContent: 'center' }}>
             <Typography variant="body1" sx={{ color: theme.palette.green.main }}>{profitPercentage}%</Typography>
@@ -35,19 +62,19 @@ const Home = () => {
         <Grid item xs={6} sm={6}>
           <Paper elevation={3} sx={{ p: 2 }}>
             <Typography variant="body1">Bundles Bought</Typography>
-            <Link href="/products">1 Bundles</Link>
+            <Link href="/products">{beneficiaryOverview.purchaseCount} Bundles</Link>
           </Paper>
         </Grid>
         <Grid item xs={6} sm={6}>
           <Paper elevation={3} sx={{ p: 2 }}>
             <Typography variant="body1">Items Sold</Typography>
-            <Link href="/products">13 Items</Link>
+            <Link href="/products">{beneficiaryOverview.totalQuantity} Items</Link>
           </Paper>
         </Grid>
         <Grid item xs={6} sm={6}>
           <Paper elevation={3} sx={{ p: 2 }}>
             <Typography variant="body1">Reservations</Typography>
-            <Link href="/reservations">2 Items</Link>
+            <Link href="/reservations">{beneficiaryOverview.reservedCount} Bundles</Link>
           </Paper>
         </Grid>
       </Grid>
