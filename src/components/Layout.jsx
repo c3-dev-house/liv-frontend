@@ -30,6 +30,7 @@ import ConfirmReservation from "../pages/Reservations/ConfirmReservation.jsx";
 import Products from "../pages/Products/Products.jsx";
 import SignIn from "../pages/SignIn.jsx";
 import CreateNewPassword from "../pages/CreateNewPassword.jsx";
+import ForgotPassword from "../pages/ForgotPassword.jsx";
 import { useAuth } from "../context/AuthContext"
 
 const Layout = ({ children }) => {
@@ -145,6 +146,7 @@ const Layout = ({ children }) => {
           <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/create-new-password" element={<CreateNewPassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/signin" />} />
           <Route path="/reservations" element={isAuthenticated ? <Reservations /> : <Navigate to="/signin" />} />
           <Route path="/reservations/:id" element={isAuthenticated ? <ReservationDetails /> : <Navigate to="/signin" />} />

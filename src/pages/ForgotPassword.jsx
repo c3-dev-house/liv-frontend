@@ -1,25 +1,26 @@
+// src/pages/ForgotPassword.jsx
 import React, { useState } from "react";
-import { Box, TextField, Button, Typography, Container, Grid } from "@mui/material";
+import { Box, TextField, Button, Typography, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../context/AuthContext';
 import axios from "../axiosConfig";
+import { useAuth } from '../context/AuthContext';
 
-const CreateNewPassword = () => {
-  const [oldPassword, setOldPassword] = useState("");
-  const [password, setPassword] = useState("");
+const ForgotPassword = () => {
+  const [username, setUsername] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { currentUser, setCurrentUser } = useAuth();
+  const { setCurrentUser } = useAuth();
+  
 
-  const handleUpdatePassword = async (e) => {
+  const handleForgotPassword = async (e) => {
     e.preventDefault();
-    if (validatePassword(password)) {
+    if (validatePassword(newPassword)) {
       try {
-        // Call the resetPassword API endpoint
-        const response = await axios.post('/api/auth/reset-password', {
-          username: currentUser.Username__c,
-          oldPassword: oldPassword, // This should be handled securely
-          newPassword: password,
+        // Call the forgotPassword API endpoint
+        const response = await axios.post('/api/auth/forgot-password', {
+          username,
+          newPassword,
         });
 
         const { user, token } = response.data;
@@ -29,11 +30,11 @@ const CreateNewPassword = () => {
         localStorage.setItem('token', token);
         setCurrentUser(user);
 
-        // Navigate to home page after successful password update
+        // Navigate to home page after successful password reset
         navigate('/');
       } catch (error) {
-        console.error('Password update failed', error);
-        setError('Failed to update password. Please try again.');
+        console.error('Password reset failed', error);
+        setError('Failed to reset password. Please try again.');
       }
     } else {
       setError("Password must be at least 6 characters long, contain at least one number, and include both lower and uppercase letters.");
@@ -43,9 +44,6 @@ const CreateNewPassword = () => {
   const validatePassword = (password) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
     return regex.test(password);
-    //console.log(password);
-    //return password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/);
-    //return true;
   };
 
   return (
@@ -61,8 +59,6 @@ const CreateNewPassword = () => {
       }}
     >
       <Box
-        //component="form"
-        //onSubmit={handleUpdatePassword}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -75,25 +71,25 @@ const CreateNewPassword = () => {
         }}
       >
         <Typography variant="h5" gutterBottom sx={{ alignSelf: "flex-start", mb: 2 }}>
-          Create new password
+          Forgot Password
         </Typography>
         <TextField
-          label="Old password"
+          label="Username"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          sx={{ width: "100%" }}
+        />
+        <TextField
+          label="New Password"
           variant="outlined"
           type="password"
           fullWidth
           margin="normal"
-          value={oldPassword}
-          onChange={(e) => setOldPassword(e.target.value)}
-          sx={{ width: "100%" }}
-        />
-        <TextField
-          label="New password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
           sx={{ width: "100%" }}
         />
         {error && (
@@ -125,16 +121,16 @@ const CreateNewPassword = () => {
         </Box>
         <Button
           type="submit"
-          onClick={handleUpdatePassword}
+          onClick={handleForgotPassword}
           variant="contained"
           color="primary"
           sx={{ mt: 2, width: "100%" }}
         >
-          Update
+          Reset Password
         </Button>
       </Box>
     </Container>
   );
 };
 
-export default CreateNewPassword;
+export default ForgotPassword;

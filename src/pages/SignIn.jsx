@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Box, TextField, Button, Typography, Link, Container, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
+
 /*
 const dummyUsers = [
   { username: "user1", password: "password1" },
@@ -10,7 +11,7 @@ const dummyUsers = [
 ];
 
 */
-const DUMMY_PASSWORD = "Liv123";
+//const DUMMY_PASSWORD = "Liv123";
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
@@ -20,11 +21,11 @@ const SignIn = () => {
   const { login } = useAuth();
   
 
-  const handleSignIn = () => {
-    if (login(username, password)) {
-      // Check if the password is the dummy password
-      if (password === DUMMY_PASSWORD) {
-        // Redirect to create new password page
+  const handleSignIn = async () => {
+    const response = await login(username, password);
+    if (response.success) {
+      // Check if the user needs to reset their password
+      if (response.needsPasswordReset) {
         navigate('/create-new-password');
       } else {
         // Authentication successful
@@ -34,6 +35,10 @@ const SignIn = () => {
       // Authentication failed
       setError("Invalid username or password");
     }
+  };
+
+  const handleForgotPassword = () => {
+    navigate('/forgot-password');
   };
 
   return (
@@ -91,7 +96,11 @@ const SignIn = () => {
                 {error}
               </Typography>
             )}
-            <Link href="#" variant="body2" sx={{ mt: 1, alignSelf: "flex-start", width: "100%" }}>
+            <Link
+              onClick={handleForgotPassword}
+              variant="body2"
+              sx={{ mt: 1, alignSelf: "flex-start", width: "100%", cursor: "pointer" }}
+            >
               Forgot your password..?
             </Link>
             <Button

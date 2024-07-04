@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { dummyUsers } from '../dummyUsers';
+import axios from "../axiosConfig";
 
 const AuthContext = createContext();
 
@@ -12,31 +13,41 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   
 
-  const login = (username, password) => {
-    const user = dummyUsers.find(
-      (user) => user.username === username && user.password === password
-    );
-    if (user) {
+  const login = async (username, password) => {
+    try {
+      const response = await axios.post('/api/auth/login', { username, password });
+      const { user, token, needsPasswordReset } = response.data;
+
+      localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
+
       setIsAuthenticated(true);
       setCurrentUser(user);
-      return true;
-    } else {
+
+      if (needsPasswordReset) {
+        return { success: true, needsPasswordReset: true };
+      }
+
+      return { success: true, needsPasswordReset: false };
+    } catch (error) {
+      console.error('Login failed', error);
       setIsAuthenticated(false);
       setCurrentUser(null);
-      return false;
+      return { success: false };
     }
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
     setIsAuthenticated(false);
     setCurrentUser(null);
   };
 
   const checkAuth = () => {
+    const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
+    if (token && user) {
       setIsAuthenticated(true);
       setCurrentUser(user);
     } else {
