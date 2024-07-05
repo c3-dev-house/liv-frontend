@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "../../axiosConfig";
 import { Typography, Box, Container, Grid } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -7,8 +7,11 @@ import ProductCard from "../../components/products/ProductCard";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [fetchTrigger, setFetchTrigger] = useState(false);
-  const [clothingBundleId,setClothingBundleId]=useState('');
+  const [clothingBundleId, setClothingBundleId] = useState("");
+  const [sortCriteria, setSortCriteria] = useState("");
+  const [filterCriteria, setFilterCriteria] = useState("");
 
   useEffect(() => {
     const fetchBeneficiarySales = async () => {
@@ -19,7 +22,7 @@ const Products = () => {
         // console.log('Fetched products:', response.data);
 
         const { orders } = response.data;
-        const soldProducts = response.data.map(product => ({
+        const soldProducts = response.data.map((product) => ({
           id: product.id,
           title: product.title,
           price: product.price,
@@ -27,77 +30,149 @@ const Products = () => {
           location: product.location,
           orderDate: product.date,
           orderTime: product.time,
-          items: product.items
+          items: product.items,
         }));
-          // console.log("soldProducts");
-          // console.log(soldProducts);
-          setProducts(soldProducts);
+        console.log("soldProducts", soldProducts);
+        setProducts(soldProducts);
+        setFilteredProducts(soldProducts);
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
       }
     };
 
     fetchBeneficiarySales();
   }, [fetchTrigger]);
-  const handleSortProducts = () => {
-    console.log("sort clicked");
+
+  useEffect(() => {
+    applyFiltersAndSorting(products);
+  }, [sortCriteria, filterCriteria]);
+
+  const applyFiltersAndSorting = () => {
+    let updatedProducts = [...products];
+
+    // Apply filtering
+    if (filterCriteria) {
+      if (filterCriteria === "hasItems") {
+        updatedProducts = updatedProducts.filter(
+          (product) => product.items && product.items.length > 0
+        );
+      } else if (filterCriteria === "noItems") {
+        updatedProducts = updatedProducts.filter(
+          (product) => !product.items || product.items.length === 0
+        );
+      }
+    }
+
+    // Apply sorting
+    if (sortCriteria) {
+      updatedProducts = updatedProducts.sort((a, b) => {
+        const dateTimeA = new Date(`${a.orderDate.split('/').reverse().join('-')}T${a.orderTime}`);
+        const dateTimeB = new Date(`${b.orderDate.split('/').reverse().join('-')}T${b.orderTime}`);
+        if (sortCriteria === "dateAsc") {
+          return dateTimeA - dateTimeB;
+        }
+        if (sortCriteria === "dateDesc") {
+          return dateTimeB - dateTimeA;
+        }
+        if (sortCriteria === "profitAsc") {
+          const profitA =
+            a.items.reduce(
+              (acc, item) => acc + item.Sales_Price__c * item.Quantity__c,
+              0
+            ) - a.price;
+          const profitB =
+            b.items.reduce(
+              (acc, item) => acc + item.Sales_Price__c * item.Quantity__c,
+              0
+            ) - b.price;
+          return profitA - profitB;
+        }
+        if (sortCriteria === "profitDesc") {
+          const profitA =
+            a.items.reduce(
+              (acc, item) => acc + item.Sales_Price__c * item.Quantity__c,
+              0
+            ) - a.price;
+          const profitB =
+            b.items.reduce(
+              (acc, item) => acc + item.Sales_Price__c * item.Quantity__c,
+              0
+            ) - b.price;
+          return profitB - profitA;
+        }
+        return 0;
+      });
+    }
+
+    setFilteredProducts(updatedProducts);
   };
 
-  const handleFilterProducts = () => {
-    console.log("filter clicked");
+  const handleSortProducts = (criteria) => {
+    setSortCriteria(criteria);
+  };
+
+  const handleFilterProducts = (criteria) => {
+    setFilterCriteria(criteria);
   };
 
   const handleAddItem = async (product, newItem) => {
-    const maxId = product.items.length ? Math.max(...product.items.map(item => parseInt(item.id, 10))) : 0;
+    const maxId = product.items.length
+      ? Math.max(...product.items.map((item) => parseInt(item.id, 10)))
+      : 0;
     const newId = maxId + 1;
     newItem.id = newId;
     // let clothingBundleId = product.items[0].Clothing_Bundles_Id__c;
     // const clothingBundle = await axios.get(`/api/products/owned-products`);
     // let clothingBundleId = clothingBundle.data[0].clothingBundlesId;
 
-    const response = await axios.post(`/api/items/addItem/${clothingBundleId}`,newItem);
+    const response = await axios.post(
+      `/api/items/addItem/${clothingBundleId}`,
+      newItem
+    );
     // console.log('Fetched products:', response.data);
     // console.log('add item clicked');
 
     // console.log(newItem);
     // Trigger re-fetch
-    setFetchTrigger(prev => !prev);
+    setFetchTrigger((prev) => !prev);
   };
 
   const handleEditItem = async (item, updatedItem) => {
-    await axios.patch(`/api/items/updateItem/${item}`,updatedItem);
+    await axios.patch(`/api/items/updateItem/${item}`, updatedItem);
     // console.log('edit item clicked');
     // console.log(item);
     // console.log(updatedItem);
     // Trigger re-fetch
-    setFetchTrigger(prev => !prev);
+    setFetchTrigger((prev) => !prev);
   };
   const handleDeleteItem = async (item) => {
     await axios.delete(`/api/items/deleteItem/${item}`);
     // console.log('delete item clicked');
     // console.log(item);
     // Trigger re-fetch
-    setFetchTrigger(prev => !prev);
+    setFetchTrigger((prev) => !prev);
   };
 
   return (
     <Container
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      p: 2,
-      maxWidth: "lg",
-    }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        p: 2,
+        maxWidth: "lg",
+      }}
     >
       <ProductsHeader
         title="Products"
         onBack={() => window.history.back()}
         onSort={handleSortProducts}
         onFilter={handleFilterProducts}
+        sortCriteria={sortCriteria}
+        filterCriteria={filterCriteria}
       />
       <Grid container spacing={2} sx={{ width: "100%" }}>
-        {products.map((product, index) => (
+        {filteredProducts.map((product, index) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
             <ProductCard
               product={product}

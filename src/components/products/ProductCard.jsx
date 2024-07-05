@@ -64,7 +64,8 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
     0
 );
 
-  const costPrice = product.price || 0; // Assuming there's a fallback cost price if it's undefined
+  const costPrice = product.price|| 0; // Assuming there's a fallback cost price if it's undefined
+  
   const profit = totalSalesPrice - costPrice;
   const profitDisplay =
       profit >= 0 ? `R ${profit.toFixed(2)}` : `(${Math.abs(profit).toFixed(2)})`;
