@@ -122,7 +122,26 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
               {product.orderDate} {product.orderTime}
             </Typography>
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>{product.title}</Typography>
-
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <Typography variant="body2" sx={{ textAlign: "left" }}>
+                Profit:
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  textAlign: "right",
+                  color: profit >= 0 ? theme.palette.green.main : theme.palette.error.main,
+                }}
+              >
+                {profitDisplay}
+              </Typography>
+            </Box>
             <Box
               sx={{
                 display: "flex",
@@ -149,26 +168,6 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
               </Typography>
               <Typography variant="body2" sx={{ textAlign: "right" }}>
                 R {totalSalesPrice.toFixed(2)}
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <Typography variant="body2" sx={{ textAlign: "left" }}>
-                Profit:
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  textAlign: "right",
-                  color: profit >= 0 ? theme.palette.green.main : theme.palette.error.main,
-                }}
-              >
-                {profitDisplay}
               </Typography>
             </Box>
           </Box>
