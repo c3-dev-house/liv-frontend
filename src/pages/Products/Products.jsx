@@ -4,6 +4,7 @@ import { Typography, Box, Container, Grid } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProductsHeader from "../../components/products/ProductsHeader";
 import ProductCard from "../../components/products/ProductCard";
+import { useAuth } from "../../context/AuthContext";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -12,16 +13,18 @@ const Products = () => {
   const [clothingBundleId, setClothingBundleId] = useState("");
   const [sortCriteria, setSortCriteria] = useState("");
   const [filterCriteria, setFilterCriteria] = useState("");
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchBeneficiarySales = async () => {
       try {
-        const customerId = "7024877994031"; // hardcoded on Grace for now
-        // const response = await axios.get(`/api/products/owned-products/${customerId}`);
-        const response = await axios.get(`/api/products/owned-products`);
+        //const customerId = "7024877994031"; // hardcoded on Grace for now // Shopify_Id__c in user object
+        const customerId = currentUser.Shopify_Id__c;
+        const response = await axios.get(`/api/products/owned-products/${customerId}`);
+        //const response = await axios.get(`/api/products/owned-products`); - used for hardcoded custId
         // console.log('Fetched products:', response.data);
 
-        const { orders } = response.data;
+        //const { orders } = response.data;
         const soldProducts = response.data.map((product) => ({
           id: product.id,
           title: product.title,
@@ -116,20 +119,27 @@ const Products = () => {
   };
 
   const handleAddItem = async (product, newItem) => {
+    console.log("addItem reached:");
+    console.log("product:",product);
+    console.log("newItem:",newItem);
+
     const maxId = product.items.length
       ? Math.max(...product.items.map((item) => parseInt(item.id, 10)))
       : 0;
     const newId = maxId + 1;
     newItem.id = newId;
-    // let clothingBundleId = product.items[0].Clothing_Bundles_Id__c;
-    // const clothingBundle = await axios.get(`/api/products/owned-products`);
-    // let clothingBundleId = clothingBundle.data[0].clothingBundlesId;
+    //const customerId = currentUser.Shopify_Id__c;
+    //console.log("customerId", customerId);    
+   // console.log(product.items[0].Clothing_Bundles_Id__c);
+     setClothingBundleId(product.items[0].Clothing_Bundles_Id__c);
+     //const clothingBundle = await axios.get(`/api/products/owned-products/${customerId}`);
+     //let clothingBundleId = clothingBundle.data[0].clothingBundlesId;
 
     const response = await axios.post(
       `/api/items/addItem/${clothingBundleId}`,
       newItem
     );
-    // console.log('Fetched products:', response.data);
+     console.log('Fetched products:', response.data);
     // console.log('add item clicked');
 
     // console.log(newItem);

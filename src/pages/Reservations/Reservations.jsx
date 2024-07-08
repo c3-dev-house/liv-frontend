@@ -12,15 +12,18 @@ import {
 import ReservationsHeader from "../../components/reservations/ReservationsHeader";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import axios from "../../axiosConfig";
+import { useAuth } from "../../context/AuthContext";
 
 const Reservations = () => {
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchReservations = async () => {
       try {
-        const customerId = "7024877994031"; // hardcoded on Grace for now
+        const customerId = currentUser.Shopify_Id__c;
+        //const customerId = "7024877994031"; // hardcoded on Grace for now
         const response = await axios.get(`/api/orders/customer-orders/${customerId}`);
         console.log("Fetched reservations:", response.data.orders);
         setReservations(response.data.orders);
