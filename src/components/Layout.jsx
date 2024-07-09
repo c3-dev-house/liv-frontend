@@ -7,18 +7,15 @@ import {
   Menu,
   MenuItem,
   Box,
-  Container
+  CircularProgress
 } from "@mui/material";
-//import MenuIcon from '@mui/material/MenuIcon'
-import MenuIcon from "@mui/icons-material/Menu"; //'@mui/icons-material/Menu' vs "@material-ui/icons/Menu"
-import AccountCircle from "@mui/icons-material/AccountCircle";
-
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   useNavigate,
-  Navigate 
+  Navigate
 } from "react-router-dom";
 
 import Home from "../pages/Home.jsx";
@@ -31,12 +28,23 @@ import Products from "../pages/Products/Products.jsx";
 import SignIn from "../pages/SignIn.jsx";
 import CreateNewPassword from "../pages/CreateNewPassword.jsx";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
-import { useAuth } from "../context/AuthContext"
+import { useAuth } from "../context/AuthContext";
 
 const Layout = ({ children }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      // Assume this function checks if the user is authenticated
+      // and updates the isAuthenticated state in useAuth context
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate async operation
+      setLoading(false);
+    };
+    checkAuth();
+  }, []);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -60,7 +68,6 @@ const Layout = ({ children }) => {
     navigate("/signin"); 
     handleClose(); 
   };
-
 
   return (
     <Box
@@ -127,35 +134,47 @@ const Layout = ({ children }) => {
           </Menu>
         </Toolbar>
       </AppBar>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "top",
-          alignItems: "center",
-          width: "100%",
-          margin: "0 auto",
-          overflowY: "auto",
-          //maxWidth: '1200px'
-        }}
-      >
-        <Routes>
-          <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/create-new-password" element={<CreateNewPassword />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/signin" />} />
-          <Route path="/reservations" element={isAuthenticated ? <Reservations /> : <Navigate to="/signin" />} />
-          <Route path="/reservations/:id" element={isAuthenticated ? <ReservationDetails /> : <Navigate to="/signin" />} />
-          <Route path="/reservations/add" element={isAuthenticated ? <AddReservation /> : <Navigate to="/signin" />} />
-          <Route path="/confirm-reservation" element={isAuthenticated ? <ConfirmReservation /> : <Navigate to="/signin" />} />
-          <Route path="/products" element={isAuthenticated ? <Products /> : <Navigate to="/signin" />} />
-          {/* Add other routes here */}
-        </Routes>
-      </Box>
+      {loading ? (
+        <Box
+          sx={{
+            marginLeft:'300px',
+            height: '100vh',
+            width: '100%',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)', // Optional: add a semi-transparent background
+            zIndex: 9999 // Ensure the loader is above other content
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "top",
+            alignItems: "center",
+            width: "100%",
+            margin: "0 auto",
+            overflowY: "auto",
+          }}
+        >
+          <Routes>
+            <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/create-new-password" element={<CreateNewPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/signin" />} />
+            <Route path="/reservations" element={isAuthenticated ? <Reservations /> : <Navigate to="/signin" />} />
+            <Route path="/reservations/:id" element={isAuthenticated ? <ReservationDetails /> : <Navigate to="/signin" />} />
+            <Route path="/reservations/add" element={isAuthenticated ? <AddReservation /> : <Navigate to="/signin" />} />
+            <Route path="/confirm-reservation" element={isAuthenticated ? <ConfirmReservation /> : <Navigate to="/signin" />} />
+            <Route path="/products" element={isAuthenticated ? <Products /> : <Navigate to="/signin" />} />
+          </Routes>
+        </Box>
+      )}
     </Box>
   );
 };

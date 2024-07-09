@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Box, Typography, TextField, Avatar, Button } from '@mui/material';
 import ProfileHeader from '../components/profile/ProfileHeader'
+import axios from "../axiosConfig";
 
 const Profile = () => {
 
   const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    username: 'joycejoys',
-    aboutMe: "I’m a 32 year old single mother of three, who would climb mountains for my children.",
-    address: 'KwaZulu-Natal, Street 1',
-  });
+  const [profileData, setProfileData] = useState({});
+
+
+  const editBeneficiaryProfile = async (updatedUser) => {
+    try {
+      const salesforceId = JSON.parse(localStorage.getItem('user')).Id;
+      if(salesforceId){
+        await axios.patch(`api/profile/updateBeneficiary/${salesforceId}`,updatedUser);
+      }else{
+        alert("Please log in"); //customize this
+      }
+
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
 
   const handleEditToggle = () => {
-    setIsEditing(!isEditing);
+    setIsEditing(!isEditing); 
   };
 
   const handleChange = (e) => {
@@ -20,6 +32,33 @@ const Profile = () => {
     setProfileData({ ...profileData, [name]: value });
   };
 
+  useEffect(() => {
+    const fetchBeneficiaryProfile = async () => {
+      try {
+        const salesforceId = JSON.parse(localStorage.getItem('user')).Id;
+        let response
+        if(salesforceId){
+          response = await axios.get(`api/profile/beneficiaryDetails/${salesforceId}`);
+        }else{
+          alert("Please log in"); //customize this
+        }
+        
+        const profile = response.data;
+        console.log(profile);
+        setProfileData({
+          username:profile.username,
+          aboutMe:profile.aboutMe,
+          streetAddress:profile.streetAddress,
+        });
+
+
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchBeneficiaryProfile();
+  }, []);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 0, width: '100%', maxWidth: '1200px',minWidth: '320px' }}>
       <ProfileHeader
@@ -42,7 +81,7 @@ const Profile = () => {
         onChange={handleChange}
         variant="outlined"
         fullWidth
-        disabled
+        disabled={!isEditing}
       />
       <Typography variant="h6" gutterBottom>
         About me
@@ -60,15 +99,18 @@ const Profile = () => {
         Street address
       </Typography>
       <TextField
-        name="address"
-        value={profileData.address}
+        name="streetAddress"
+        value={profileData.streetAddress}
         onChange={handleChange}
         variant="outlined"
         fullWidth
         disabled={!isEditing}
       />
       {isEditing && (
-        <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleEditToggle}>
+        <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={()=>{
+          handleEditToggle;
+          editBeneficiaryProfile(profileData);
+          }}>
           Save
         </Button>
       )}

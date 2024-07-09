@@ -1,6 +1,7 @@
 // src/pages/SignIn.jsx
 import React, { useState } from "react";
 import { Box, TextField, Button, Typography, Link, Container, Grid } from "@mui/material";
+import { InfoOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 
@@ -17,11 +18,25 @@ const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [usernameInfo,setUsernameInfo]=useState(false);
+  const [passwordInfo,setPasswordInfo]=useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
   
 
   const handleSignIn = async () => {
+    // Clear previous errors
+    setError("");
+
+    // Validate inputs
+    if (!validateUsername(username) ||!validatePassword(password) ) {
+      setError("Invalid username or password");
+      return;
+    }
+//Must be at least 6 characters long, contain at least one uppercase letter and one number.
+//Must be 3-15 characters and contain only letters, numbers, and underscores.
+
+
     const response = await login(username, password);
     if (response.success) {
       // Check if the user needs to reset their password
@@ -40,6 +55,15 @@ const SignIn = () => {
   const handleForgotPassword = () => {
     navigate('/forgot-password');
   };
+  const validateUsername = (username) => {
+      const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;
+    return usernameRegex.test(username);
+  }
+
+  const validatePassword = (password) => {
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
+      return passwordRegex.test(password);
+  }
 
   return (
     <Container
@@ -51,7 +75,7 @@ const SignIn = () => {
         justifyContent: "start",
         height: "100vh",
         width: "100%",
-        p: 5,
+        p: 3,
       }}
     >
       <Typography variant="h5" gutterBottom sx={{ alignSelf: "flex-start", mb: 2 }}>
@@ -72,25 +96,45 @@ const SignIn = () => {
               //minWidth: "100%"
             }}
           >
-            <TextField
-              label="Username"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              sx={{ width: "100%" }}
-            />
-            <TextField
-              label="Password"
-              variant="outlined"
-              type="password"
-              fullWidth
-              margin="normal"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              sx={{ width: "100%" }}
-            />
+            <div style={{ width: "100%" }}>
+              <div style={{display:"flex", flexDirection:"row", alignItems:"center", columnGap:"5px"}}>
+                <TextField
+                  label="Username"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  sx={{ width: "100%" }}
+                />
+                <InfoOutlined onClick={()=>setUsernameInfo(!usernameInfo)} style={{color:"gray"}} />
+              </div>
+
+              {usernameInfo && (
+                <div style={{ fontStyle: "italic", fontSize:"x-small", color: "gray"}}>Minimum 3 characters</div>
+              )}
+            </div>
+            <div style={{ width: "100%" }}>
+              <div style={{display:"flex", flexDirection:"row", alignItems:"center",columnGap:"5px"}}>
+                <TextField
+                  label="Password"
+                  variant="outlined"
+                  type="password"
+                  fullWidth
+                  margin="normal"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  sx={{ width: "100%" }}
+                />
+                <InfoOutlined onClick={() => setPasswordInfo(!passwordInfo)} style={{ backgroundColor:passwordInfo? "rgb(220, 220, 220)" : "",borderRadius:"100px", color: "gray" }} />
+              </div>
+
+              {passwordInfo && (
+                <div style={{ fontStyle: "italic", fontSize:"x-small", color: "gray"}}>
+                  Minimum 6 characters long, 1 uppercase letter and 1 number
+                </div>
+              )}
+            </div>
             {error && (
               <Typography color="error" sx={{ mt: 1 }}>
                 {error}

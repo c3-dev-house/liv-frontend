@@ -15,11 +15,13 @@ const Home = () => {
   useEffect(() => {
     const fetchBeneficiaryOverview = async () => {
       try {
-        const salesforceId = "a01Ad00000Y05MAIAZ"; // hardcoded on Grace for now
-        // const response = await axios.get(`/api/products/owned-products/${customerId}`);
-        const response = await axios.get(`api/overview/beneficiarySales/${salesforceId}`);
-        // console.log('Fetched products:', response.data);
-
+        const salesforceId = JSON.parse(localStorage.getItem('user')).Id;
+        let response
+        if(salesforceId){
+          response = await axios.get(`api/overview/beneficiarySales/${salesforceId}`);
+        }else{
+          alert("Please log in"); //customize this
+        }
         
         const overview = response.data;
         console.log(overview);
