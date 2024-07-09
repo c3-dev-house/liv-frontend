@@ -5,15 +5,19 @@ import AddIcon from "@mui/icons-material/Add";
 import ProductsHeader from "../../components/products/ProductsHeader";
 import ProductCard from "../../components/products/ProductCard";
 import { useAuth } from "../../context/AuthContext";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [fetchTrigger, setFetchTrigger] = useState(false);
-  const [clothingBundleId, setClothingBundleId] = useState("");
+  const [thisClothingBundleId, setThisClothingBundleId] = useState("");
   const [sortCriteria, setSortCriteria] = useState("");
   const [filterCriteria, setFilterCriteria] = useState("");
   const { currentUser } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  
 
   useEffect(() => {
     const fetchBeneficiarySales = async () => {
@@ -131,7 +135,8 @@ const Products = () => {
     //const customerId = currentUser.Shopify_Id__c;
     //console.log("customerId", customerId);    
    // console.log(product.items[0].Clothing_Bundles_Id__c);
-     setClothingBundleId(product.items[0].Clothing_Bundles_Id__c);
+   setThisClothingBundleId(product.items[0].Clothing_Bundles_Id__c);
+   const clothingBundleId = product.items[0].Clothing_Bundles_Id__c;
      //const clothingBundle = await axios.get(`/api/products/owned-products/${customerId}`);
      //let clothingBundleId = clothingBundle.data[0].clothingBundlesId;
 
@@ -155,11 +160,14 @@ const Products = () => {
     // Trigger re-fetch
     setFetchTrigger((prev) => !prev);
   };
-  const handleDeleteItem = async (item) => {
-    await axios.delete(`/api/items/deleteItem/${item}`);
-    // console.log('delete item clicked');
-    // console.log(item);
-    // Trigger re-fetch
+  const handleDeleteItem = (item) => {
+    setItemToDelete(item);
+    setIsModalOpen(true);
+  };
+
+  const confirmDeleteItem = async () => {
+    setIsModalOpen(false);
+    await axios.delete(`/api/items/deleteItem/${itemToDelete}`);
     setFetchTrigger((prev) => !prev);
   };
 
@@ -189,11 +197,18 @@ const Products = () => {
               onAddItem={handleAddItem}
               onEditItem={handleEditItem}
               onDeleteItem={handleDeleteItem}
-              setClothingBundleId={setClothingBundleId}
+              setClothingBundleId={setThisClothingBundleId}
             />
           </Grid>
         ))}
       </Grid>
+      <ConfirmationModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={confirmDeleteItem}
+        title="Delete Item"
+        description="Are you sure you want to delete this item?"
+      />
     </Container>
   );
 };
