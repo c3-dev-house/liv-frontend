@@ -15,63 +15,7 @@ import {
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ProductCard from "../../components/reservations/ProductCard";
-
-const dummyProducts = [
-  {
-    id: 1,
-    title: "B-0001", //title in backend
-    body_html: "Men's clothes bundle",
-    createdAt: "20/05/2024",
-    price: 300,
-    location: "KZN",
-    contents: "10 items"
-  },
-  {
-    id: 2,
-    title: "B-0002",
-    body_html: "Babies clothes bundle",
-    createdAt: "20/05/2024",
-    price: 300,
-    location: "KZN",
-    contents: "10 items"
-  },
-  {
-    id: 3,
-    title: "B-0003",
-    body_html: "Young male clothes bundle",
-    createdAt: "20/05/2024",
-    price: 300,
-    location: "KZN",
-    contents: "10 items"
-  },
-  {
-    id: 4,
-    title: "B-0004",
-    body_html: "Women's clothes bundle",
-    createdAt: "20/05/2024",
-    price: 300,
-    location: "KZN",
-    contents: "10 items"
-  },
-  {
-    id: 5,
-    title: "B-0005",
-    body_html: "Young female clothes bundle",
-    createdAt: "20/05/2024",
-    price: 300,
-    location: "KZN",
-    contents: "10 items"
-  },
-  {
-    id: 6,
-    title: "B-0006",
-    body_html: "Men's clothes bundle",
-    createdAt: "20/05/2024",
-    price: 300,
-    location: "KZN",
-    contents: "10 items",
-  },
-];
+import { useAuth } from "../../context/AuthContext";
 
 const AddReservation = ({ onBack }) => {
   const navigate = useNavigate();
@@ -79,11 +23,13 @@ const AddReservation = ({ onBack }) => {
   const [location, setLocation] = useState("KZN");
   const [products, setProducts] = useState([]);
   const [customerId, setCustomerId] = useState("7024877994031");
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const vendor = "KZN"; // You can change this value or make it dynamic based on your requirements
+        
+        const vendor = "KZN"; // fixed for now - todo: add category select? //or mvp2ish
         const response = await axios.get(`/api/products/vendor-products?vendor=${vendor}`);
         console.log('Fetched products:', response.data);
 
@@ -126,6 +72,7 @@ const AddReservation = ({ onBack }) => {
   };
 
   const handlePlaceOrder = () => {
+    const customerId = currentUser.Shopify_Id__c;
     const reservation = {
       customerId,
       location,

@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     setCurrentUser(null);
   };
-
+ //verify endpoint for token?
   const checkAuth = () => {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user'));
