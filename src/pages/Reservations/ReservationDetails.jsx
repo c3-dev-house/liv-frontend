@@ -3,6 +3,7 @@ import { useParams, useNavigate} from "react-router-dom";
 import { Box, Typography, Paper, Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "../../axiosConfig";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 
 const dummyReservations = [
@@ -23,6 +24,7 @@ const ReservationDetails = () => {
   const { id } = useParams();
   const [reservation, setReservation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
 
@@ -44,6 +46,7 @@ const ReservationDetails = () => {
   }, [id]);
 
   const handleCancelOrder = async () => {
+    setIsModalOpen(false);
     try {
       const productIds = reservation.products.map((product) => product.id);
       await axios.post(`/api/orders/cancel`, {
@@ -130,10 +133,18 @@ const ReservationDetails = () => {
         variant="contained"
         color="primary"
         sx={{ mt: 2 }}
-        onClick={handleCancelOrder}
+        //onClick={handleCancelOrder}
+        onClick={() => setIsModalOpen(true)}
       >
         Cancel Order
       </Button>
+      <ConfirmationModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleCancelOrder}
+        title="Cancel Order"
+        description="Are you sure you want to cancel this order?"
+      />
     </Box>
   );
 };
