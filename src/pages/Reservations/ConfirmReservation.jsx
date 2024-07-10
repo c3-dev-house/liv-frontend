@@ -1,5 +1,5 @@
 import React, {useState}from "react";
-import { Toolbar, IconButton, Typography, Button, Box } from "@mui/material";
+import { Toolbar, IconButton, Typography, Button, Box, Alert } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useLocation, useNavigate } from "react-router-dom";
 import ShowReservation from "../../components/reservations/ShowReservation";
@@ -11,6 +11,8 @@ const ConfirmReservation = () => {
   const navigate = useNavigate();
   const { reservation } = location.state;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [remainingQuantity, setRemainingQuantity] = useState(0);
 
   const handleReserve = async () => {
     setIsModalOpen(false);
@@ -35,7 +37,13 @@ const ConfirmReservation = () => {
       navigate("/reservations");
     } catch (error) {
       console.error("Error creating order", error);
+      if (error.response && error.response.data) {
+        // Capture the error message from the response
+        setErrorMessage(error.response.data.error);
+        setRemainingQuantity(error.response.data.remainingQuantity);
+      console.error("Error creating order", error);
     }
+  }
   };
 
   return (
@@ -53,6 +61,11 @@ const ConfirmReservation = () => {
           Confirm reservation
         </Typography>
       </Toolbar>
+      {!errorMessage && (
+        <Alert severity="error" sx={{ margin: "16px 0" }}>
+          {errorMessage}. You can still order {remainingQuantity} products.
+        </Alert>
+      )}
       <ShowReservation reservation={reservation} />
       <Box sx={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
         <Button

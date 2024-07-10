@@ -93,7 +93,7 @@ const Layout = ({ children }) => {
             sx={{ cursor: 'pointer' }}
             onClick={handleNavigateHome}
           >
-            LIV
+            Umthombo Marketplace
           </Typography>
           <IconButton
             edge="end"
