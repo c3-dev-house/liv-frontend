@@ -2,6 +2,30 @@ import React,{ useState,useEffect } from 'react';
 import axios from "../axiosConfig";
 import { Box, Typography, Paper, Grid, Link } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import logo from '../assets/logo.png'
+import jobsFund from '../assets/JobsFund.jpg'
+
+const BrandingImages = () => {
+  return (
+    <Box 
+      sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        position: 'fixed', 
+        bottom: 0, 
+        width: '100%', 
+        opacity: 1, 
+        backgroundColor: 'white', 
+        padding: '16px',
+        //boxShadow: '0 -2px 5px rgba(0,0,0,0.1)' // optional: add some shadow to separate it visually
+      }}
+    >
+      <img src={logo} alt="Logo" style={{ height: '150px', marginRight: '16px' }} />
+      <img src={jobsFund} alt="Jobs Fund" style={{ height: '150px', marginRight: '16px'  }} />
+    </Box>
+  );
+};
 
 const Home = () => {
   const [beneficiaryOverview,setBeneficiaryOverview]=useState([]);
@@ -80,6 +104,7 @@ const Home = () => {
           </Paper>
         </Grid>
       </Grid>
+      <BrandingImages />
     </Box>
   );
 };
