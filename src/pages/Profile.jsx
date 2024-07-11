@@ -2,24 +2,34 @@ import React, { useState,useEffect } from 'react';
 import { Box, Typography, TextField, Avatar, Button } from '@mui/material';
 import ProfileHeader from '../components/profile/ProfileHeader'
 import axios from "../axiosConfig";
+import CustomAlert from '../components/CustomAlert';
 
 const Profile = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
 
   const editBeneficiaryProfile = async (updatedUser) => {
+    
+    setLoading(true);
     try {
       const salesforceId = JSON.parse(localStorage.getItem('user')).Id;
-      if(salesforceId){
-        await axios.patch(`api/profile/updateBeneficiary/${salesforceId}`,updatedUser);
-      }else{
-        alert("Please log in"); //customize this
+      if (salesforceId) {
+        await axios.patch(`api/profile/updateBeneficiary/${salesforceId}`, updatedUser);
+      } else {
+        setErrorMessage('Error'); 
+        setAlertOpen(true); 
       }
-
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error editing profile:', error);
+      setErrorMessage('Failed to update profile. Please try again.');
+      setAlertOpen(true); 
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,6 +43,7 @@ const Profile = () => {
   };
 
   useEffect(() => {
+    //remove api logic.. set from currentUser. 
     const fetchBeneficiaryProfile = async () => {
       try {
         const salesforceId = JSON.parse(localStorage.getItem('user')).Id;
@@ -114,6 +125,13 @@ const Profile = () => {
           Save
         </Button>
       )}
+      {loading && <CircularProgress sx={{ mt: 2 }} />}
+      <CustomAlert
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+        severity="error"
+        message={errorMessage}
+      />
     </Box>
   );
 };

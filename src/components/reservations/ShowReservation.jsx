@@ -19,7 +19,7 @@ const ShowReservation = ({ reservation }) => {
           <React.Fragment key={index}>
             <Grid item xs={6}>
               <Typography variant="body2">
-                {item.id} {item.body_html}
+                {item.title} {item.bodyHtml}
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
