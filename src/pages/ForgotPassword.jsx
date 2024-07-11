@@ -1,20 +1,26 @@
 // src/pages/ForgotPassword.jsx
 import React, { useState } from "react";
-import { Box, TextField, Button, Typography, Container } from "@mui/material";
+import { Box, TextField, Button, Typography, Container, CircularProgress  } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
 import { useAuth } from '../context/AuthContext';
+import CustomAlert from "../components/CustomAlert";
 
 const ForgotPassword = () => {
   const [username, setUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); 
+  const [alertOpen, setAlertOpen] = useState(false); 
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const { setCurrentUser } = useAuth();
   
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     if (validatePassword(newPassword)) {
       try {
         // Call the forgotPassword API endpoint
@@ -34,11 +40,16 @@ const ForgotPassword = () => {
         navigate('/');
       } catch (error) {
         console.error('Password reset failed', error);
-        setError('Failed to reset password. Please try again.');
+        setErrorMessage('Failed to reset password. Please try again.');
+        setAlertOpen(true);
+      } finally {
+        setLoading(false); // Stop loading
       }
     } else {
       setError("Password must be at least 6 characters long, contain at least one number, and include both lower and uppercase letters.");
+      setLoading(false);
     }
+
   };
 
   const validatePassword = (password) => {
@@ -125,10 +136,17 @@ const ForgotPassword = () => {
           variant="contained"
           color="primary"
           sx={{ mt: 2, width: "100%" }}
+          disabled={loading} 
         >
-          Reset Password
+          {loading ? <CircularProgress size={24} /> : "Reset Password"} 
         </Button>
       </Box>
+      <CustomAlert
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+        severity="error"
+        message={errorMessage}
+      />
     </Container>
   );
 };
