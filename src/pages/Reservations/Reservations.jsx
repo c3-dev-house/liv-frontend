@@ -85,7 +85,7 @@ const Reservations = () => {
                       justifyContent: "space-between",
                       alignItems: "center",
                       flexDirection: "row",
-                      gap: 2,
+                      gap: 1,
                       height: "100%",
                     }}
                   >

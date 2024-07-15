@@ -87,7 +87,7 @@ const Home = () => {
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'right' }}>
             {loading ? (
-              <CircularProgress size={24} /> // Show spinner while loading
+              <CircularProgress size={24} /> 
             ) : (
               <>
                 <Typography variant="body1" sx={{ color: theme.palette.green.main }}>R {beneficiaryOverview.totalProfit}</Typography>
@@ -98,7 +98,7 @@ const Home = () => {
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'center', justifyContent: 'center' }}>
             {loading ? (
-              <CircularProgress size={24} /> // Show spinner while loading
+              <CircularProgress size={24} /> 
             ) : (
               <Typography variant="body1" sx={{ color: theme.palette.green.main }}>{profitPercentage}%</Typography>
             )}
