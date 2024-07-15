@@ -1,0 +1,104 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Typography,
+  Paper,
+  IconButton,
+  autocompleteClasses,
+  Container,
+  Grid
+} from "@mui/material";
+import BeneficiariesHeader from "../../components/beneficiaries/BeneficiariesHeader";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import axios from "../../axiosConfig";
+import { useAuth } from "../../context/AuthContext";
+
+const Beneficiaries = () => {
+  const navigate = useNavigate();
+  const [beneficiaries, setBeneficiaries] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { currentUser } = useAuth();
+
+  useEffect(() => {
+    const fetchBeneficiaries = async () => {
+      try {
+        const response = await axios.get(`/api/admin/allBeneficiaries`);
+        console.log("Fetched beneficiaries:", response.data);
+        setBeneficiaries(response.data);
+      } catch (error) {
+        console.error("Error fetching reservations:", error);
+      }
+    };
+
+    fetchBeneficiaries();
+  }, []);
+
+  const handleNavigateTo = (path) => {
+    console.log(path);
+    navigate(path);
+  };
+
+  const filteredBeneficiaries = beneficiaries.filter(beneficiary =>
+    beneficiary.Username__c.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <Container
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      p: 2,
+      maxWidth: "lg",
+      margin: "0 auto",
+    }}
+  >
+      <BeneficiariesHeader
+        title="Beneficiaries"
+        onBack={() => window.history.back()}
+        onAdd={() => handleNavigateTo("/reservations/add")}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
+      <Grid container spacing={1} sx={{ width: "100%", mt: 2 }}>
+        {filteredBeneficiaries.map((user, index) => (
+          <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+            <Paper
+              sx={{
+                p: 1,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexDirection: "row",
+                height: "100%",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  flexGrow: 1,
+                }}
+              >
+                <Typography variant="body2">
+                  {user.Username__c}
+                </Typography>
+              </Box>
+              <IconButton
+                aria-label="view reservation"
+                color="primary"
+                onClick={() => handleNavigateTo(`/reservationsAdmin/${user.Shopify_Id__c}`)}
+              >
+                <ArrowForwardIcon />
+              </IconButton>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
+  );
+};
+
+export default Beneficiaries;

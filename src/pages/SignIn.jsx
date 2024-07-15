@@ -4,6 +4,7 @@ import { Box, TextField, Button, Typography, Link, Container, Grid } from "@mui/
 import { InfoOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
+import axios from "../axiosConfig";
 
 /*
 const dummyUsers = [
@@ -21,7 +22,7 @@ const SignIn = () => {
   const [usernameInfo,setUsernameInfo]=useState(false);
   const [passwordInfo,setPasswordInfo]=useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, adminLogin} = useAuth();
   
 
   const handleSignIn = async () => {
@@ -51,6 +52,29 @@ const SignIn = () => {
       setError("Invalid username or password");
     }
   };
+
+  const handleAdminSignIn = async () => {
+    // Clear previous errors
+    setError("");
+
+    // Validate inputs
+    if (!validateUsername(username) ||!validatePassword(password) ) {
+      setError("Invalid username or password");
+      return;
+    }
+//Must be at least 6 characters long, contain at least one uppercase letter and one number.
+//Must be 3-15 characters and contain only letters, numbers, and underscores.
+
+    const response = await adminLogin(username, password);
+    if (response.success) {
+      navigate('/allBeneficiaries');
+    } else {
+      // Authentication failed
+      setError("Invalid username or password");
+    }
+  };
+
+
 
   const handleForgotPassword = () => {
     navigate('/forgot-password');
@@ -154,6 +178,14 @@ const SignIn = () => {
               onClick={handleSignIn}
             >
               Sign in
+            </Button>
+            <Button
+              variant="contained"
+              color="info"
+              sx={{ mt: 2, width: "100%" }}
+              onClick={handleAdminSignIn}
+            >
+              Sign in Admin
             </Button>
           </Box>
         </Grid>
