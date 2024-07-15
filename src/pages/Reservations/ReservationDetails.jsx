@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { useParams, useNavigate} from "react-router-dom";
+import { useParams, useNavigate,useLocation } from "react-router-dom";
 import { Box, Typography, Paper, Button, CircularProgress } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "../../axiosConfig";
@@ -17,7 +17,11 @@ const ReservationDetails = () => {
   const [alertOpen, setAlertOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen]= useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const isAdmin = queryParams.get('isAdmin') === 'true';
 
 
   useEffect(() => {
@@ -57,6 +61,25 @@ const ReservationDetails = () => {
       setCancelLoading(false);
     }
   };
+
+  const handleMarkAsPaid = async () => {
+    setPaymentModalOpen(false);
+    try {
+      const productIds = reservation.products.map((product) => product.id);
+      await axios.post(`/api/orders/markAsPaid`, {
+        orderId: reservation.id,
+        productIds,
+      });
+      navigate(`/reservationsAdmin/${id}`); 
+    } catch (error) {
+      console.error("Error canceling order:", error);
+      setErrorMessage("Server error. Contact administrator.");
+      setAlertOpen(true);
+    } finally {
+      setCancelLoading(false);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -133,6 +156,7 @@ const ReservationDetails = () => {
           </Typography>
         </Box>
       </Paper>
+      <div style={{ display:'flex',gap:'1rem' }}>
       <Button
         variant="contained"
         color="primary"
@@ -142,6 +166,18 @@ const ReservationDetails = () => {
       >
         {cancelLoading ? <CircularProgress size={24} /> : "Cancel Order"}
       </Button>
+      {isAdmin &&(
+        <Button
+          variant="contained"
+          color="success"
+          sx={{ mt: 2}}
+          //onClick={handleCancelOrder}
+          onClick={() => setPaymentModalOpen(true)}
+        >
+          Mark As Paid
+        </Button>
+      )}
+      </div>
       <ConfirmationModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -154,6 +190,13 @@ const ReservationDetails = () => {
         setAlertOpen={setAlertOpen}
         severity="error"
         message={errorMessage}
+      />
+      <ConfirmationModal
+        open={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        onConfirm={handleMarkAsPaid}
+        title="Confirm Payment"
+        description="Are you sure you want to mark this order as paid?"
       />
     </Box>
   );

@@ -29,15 +29,18 @@ import SignIn from "../pages/SignIn.jsx";
 import CreateNewPassword from "../pages/CreateNewPassword.jsx";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
 import { useAuth } from "../context/AuthContext";
+import Beneficiaries from "../pages/Admin/Beneficiaries.jsx";
+import ReservationsAdmin from "../pages/Reservations/ReservationsAdmin.jsx";
 import BrandLineComponent from "./BrandLineComponent";
 
 const Layout = ({ children }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout,isAdminAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log(isAdminAuthenticated)
     const checkAuth = async () => {
       // Assume this function checks if the user is authenticated
       // and updates the isAuthenticated state in useAuth context
@@ -147,7 +150,7 @@ const Layout = ({ children }) => {
           </Menu>
         </Toolbar>
       </AppBar>
-      {loading ? (
+      {loading ? ( ///LOADER
         <Box
           sx={{
             height: "100vh",
@@ -178,60 +181,21 @@ const Layout = ({ children }) => {
           }}
         >
           <Routes>
-            <Route
-              path="/"
-              element={isAuthenticated ? <Home /> : <Navigate to="/signin" />}
-            />
+            <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" />} />
+            <Route path="/allBeneficiaries" element={ <Beneficiaries />} />
             <Route path="/signin" element={<SignIn />} />
             <Route
               path="/create-new-password"
               element={<CreateNewPassword />}
             />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route
-              path="/profile"
-              element={
-                isAuthenticated ? <Profile /> : <Navigate to="/signin" />
-              }
-            />
-            <Route
-              path="/reservations"
-              element={
-                isAuthenticated ? <Reservations /> : <Navigate to="/signin" />
-              }
-            />
-            <Route
-              path="/reservations/:id"
-              element={
-                isAuthenticated ? (
-                  <ReservationDetails />
-                ) : (
-                  <Navigate to="/signin" />
-                )
-              }
-            />
-            <Route
-              path="/reservations/add"
-              element={
-                isAuthenticated ? <AddReservation /> : <Navigate to="/signin" />
-              }
-            />
-            <Route
-              path="/confirm-reservation"
-              element={
-                isAuthenticated ? (
-                  <ConfirmReservation />
-                ) : (
-                  <Navigate to="/signin" />
-                )
-              }
-            />
-            <Route
-              path="/products"
-              element={
-                isAuthenticated ? <Products /> : <Navigate to="/signin" />
-              }
-            />
+            <Route path="/profile" element={isAuthenticated || isAdminAuthenticated ? <Profile /> : <Navigate to="/signin" />} />
+            <Route path="/reservations" element={isAuthenticated ? <Reservations /> : <Navigate to="/signin" />} />
+            <Route path="/reservationsAdmin/:id" element={isAuthenticated || isAdminAuthenticated ?<ReservationsAdmin />: <Navigate to="/signin" />}/>
+            <Route path="/reservations/:id" element={isAuthenticated || isAdminAuthenticated ? <ReservationDetails /> : <Navigate to="/signin" />} />
+            <Route path="/reservations/add" element={isAuthenticated ? <AddReservation /> : <Navigate to="/signin" />} />
+            <Route path="/confirm-reservation" element={isAuthenticated ? <ConfirmReservation /> : <Navigate to="/signin" />} />
+            <Route path="/products" element={isAuthenticated ? <Products /> : <Navigate to="/signin" />} />
           </Routes>
         </Box>
       )}

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000', // Your backend base URL
+  baseURL: 'http://liv-village-backend-env.eba-2jjmrubm.eu-west-3.elasticbeanstalk.com/', //backend link
 });
 
 export default axiosInstance;

@@ -5,6 +5,7 @@ import { InfoOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 import CustomAlert from "../components/CustomAlert";
+import axios from "../axiosConfig";
 
 /*
 const dummyUsers = [
@@ -25,7 +26,7 @@ const SignIn = () => {
   const [alertOpen, setAlertOpen] = useState(false); 
   const [errorMessage, setErrorMessage] = useState(""); 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, adminLogin} = useAuth();
   
 
   const handleSignIn = async () => {
@@ -38,29 +39,48 @@ const SignIn = () => {
       setLoading(false);
       return;
     }
-//Must be at least 6 characters long, contain at least one uppercase letter and one number.
-//Must be 3-15 characters and contain only letters, numbers, and underscores.
 
-
-try {
-  const response = await login(username, password);
-  if (response.success) {
-    if (response.needsPasswordReset) {
-      navigate('/create-new-password');
+  try {
+    const response = await login(username, password);
+    if (response.success) {
+      if (response.needsPasswordReset) {
+        navigate('/create-new-password');
+      } else {
+        navigate('/');
+      }
     } else {
-      navigate('/');
+      setError("Invalid username or password");
     }
-  } else {
-    setError("Invalid username or password");
+  } catch (error) {
+    console.error("Error signing in:", error);
+    setErrorMessage("Error signing in. Please try again."); 
+    setAlertOpen(true); 
+  } finally {
+    setLoading(false); 
   }
-} catch (error) {
-  console.error("Error signing in:", error);
-  setErrorMessage("Error signing in. Please try again."); 
-  setAlertOpen(true); 
-} finally {
-  setLoading(false); 
-}
+};
+
+  const handleAdminSignIn = async () => {
+    // Clear previous errors
+    setError("");
+
+    // Validate inputs
+    if (!validateUsername(username) ||!validatePassword(password) ) {
+      setError("Invalid username or password");
+      setLoading(false);
+      return;
+    }
+
+    const response = await adminLogin(username, password);
+    if (response.success) {
+      navigate('/allBeneficiaries');
+    } else {
+      // Authentication failed
+      setError("Invalid username or password");
+    }
   };
+
+
 
   const handleForgotPassword = () => {
     navigate('/forgot-password');
@@ -165,6 +185,22 @@ try {
               disabled={loading}
             >
               {loading ? <CircularProgress size={24} /> : "Sign in"} 
+            </Button>
+            <Button
+              variant="contained"
+              color="info"
+              sx={{ mt: 2, width: "100%" }}
+              onClick={handleAdminSignIn}
+            >
+              Sign in Admin
+            </Button>
+            <Button
+              variant="contained"
+              color="info"
+              sx={{ mt: 2, width: "100%" }}
+              onClick={handleAdminSignIn}
+            >
+              Sign in Admin
             </Button>
           </Box>
         </Grid>
