@@ -1,29 +1,21 @@
 import React, {useState, useEffect} from "react";
 import { useParams, useNavigate,useLocation } from "react-router-dom";
-import { Box, Typography, Paper, Button } from "@mui/material";
+import { Box, Typography, Paper, Button, CircularProgress } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "../../axiosConfig";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import CustomAlert from "../../components/CustomAlert";
 
 
-const dummyReservations = [
-  {
-    id: 1,
-    date: "15/05/2025",
-    time: "08:45:15am",
-    items: 2,
-    products: [
-      { id: "B-0001", title: "Men's clothes bundle", price: 300 },
-      { id: "B-0002", title: "Babies clothes bundle", price: 300 },
-    ],
-    location: "LIV DBN",
-  },
-];
+
 
 const ReservationDetails = () => {
   const { id } = useParams();
   const [reservation, setReservation] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen]= useState(false);
   const navigate = useNavigate();
@@ -41,8 +33,10 @@ const ReservationDetails = () => {
         setReservation(response.data.order);
       } catch (error) {
         console.error("Error fetching reservation:", error);
+        setErrorMessage("Server error. Contact administrator.");
+        setAlertOpen(true);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
@@ -51,6 +45,7 @@ const ReservationDetails = () => {
 
   const handleCancelOrder = async () => {
     setIsModalOpen(false);
+    setCancelLoading(true);
     try {
       const productIds = reservation.products.map((product) => product.id);
       await axios.post(`/api/orders/cancel`, {
@@ -60,6 +55,28 @@ const ReservationDetails = () => {
       navigate("/reservations"); 
     } catch (error) {
       console.error("Error canceling order:", error);
+      setErrorMessage("Server error. Contact administrator.");
+      setAlertOpen(true);
+    } finally {
+      setCancelLoading(false);
+    }
+  };
+
+  const handleMarkAsPaid = async () => {
+    setPaymentModalOpen(false);
+    try {
+      const productIds = reservation.products.map((product) => product.id);
+      await axios.post(`/api/orders/markAsPaid`, {
+        orderId: reservation.id,
+        productIds,
+      });
+      navigate(`/reservationsAdmin/${id}`); 
+    } catch (error) {
+      console.error("Error canceling order:", error);
+      setErrorMessage("Server error. Contact administrator.");
+      setAlertOpen(true);
+    } finally {
+      setCancelLoading(false);
     }
   };
 
@@ -77,8 +94,12 @@ const ReservationDetails = () => {
     }
   };
 
-  if (isLoading) {
-    return <Typography variant="h6">Loading...</Typography>;
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
 
@@ -106,6 +127,7 @@ const ReservationDetails = () => {
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => window.history.back()}
+          disabled={cancelLoading}
         >
           Back
         </Button>
@@ -151,11 +173,11 @@ const ReservationDetails = () => {
       <Button
         variant="contained"
         color="primary"
-        sx={{ mt: 2 }}
-        //onClick={handleCancelOrder}
+        sx={{ mt: 2, minWidth: "200px" }}
         onClick={() => setIsModalOpen(true)}
+        disabled={cancelLoading}
       >
-        Cancel Order
+        {cancelLoading ? <CircularProgress size={24} /> : "Cancel Order"}
       </Button>
       {isAdmin &&(
         <Button
@@ -175,6 +197,12 @@ const ReservationDetails = () => {
         onConfirm={handleCancelOrder}
         title="Cancel Order"
         description="Are you sure you want to cancel this order?"
+      />
+      <CustomAlert
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+        severity="error"
+        message={errorMessage}
       />
       <ConfirmationModal
         open={paymentModalOpen}

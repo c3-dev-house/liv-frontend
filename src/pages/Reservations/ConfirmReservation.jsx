@@ -1,17 +1,24 @@
 import React, {useState}from "react";
-import { Toolbar, IconButton, Typography, Button, Box } from "@mui/material";
+import { Toolbar, IconButton, Typography, Button, Box, Alert, CircularProgress, Collapse} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CloseIcon from "@mui/icons-material/Close";
 import { useLocation, useNavigate } from "react-router-dom";
 import ShowReservation from "../../components/reservations/ShowReservation";
 import axios from "../../axiosConfig";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import CustomAlert from "../../components/CustomAlert"; 
+
 
 const ConfirmReservation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { reservation } = location.state;
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState("");
+  const [remainingQuantity, setRemainingQuantity] = useState(0);
+  const [alertOpen, setAlertOpen] = useState(false);
+//todo fix contents description display.
   const handleReserve = async () => {
     setIsModalOpen(false);
     console.log("Reservation confirmed", reservation);
@@ -24,6 +31,7 @@ const ConfirmReservation = () => {
     const productIds = contents.map((product) => product.id);
 
     try {
+      setLoading(true);
       const response = await axios.post("/api/orders/create", {
         customerId,
         variantIds,
@@ -32,10 +40,22 @@ const ConfirmReservation = () => {
       console.log("Order created successfully", response.data);
 
       // Navigate back to reservations page
+      setLoading(false);
       navigate("/reservations");
     } catch (error) {
       console.error("Error creating order", error);
-    }
+      if (error.response && error.response.data) {
+        // Capture the error message from the response
+        setErrorMessage(error.response.data.error);
+        setRemainingQuantity(error.response.data.remainingQuantity);
+        setLoading(false);
+      console.error("Error creating order", error);
+      } else {
+        setErrorMessage("An unexpected error occurred.");
+      }
+      setLoading(false);
+      setAlertOpen(true);
+  }
   };
 
   return (
@@ -53,6 +73,13 @@ const ConfirmReservation = () => {
           Confirm reservation
         </Typography>
       </Toolbar>
+      <CustomAlert
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+        severity="error"
+        message={errorMessage}
+        additionalMessage={`You can still order ${remainingQuantity} products.`}
+      />
       <ShowReservation reservation={reservation} />
       <Box sx={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
         <Button
@@ -61,8 +88,9 @@ const ConfirmReservation = () => {
           sx={{ minWidth: "200px" }}
           //onClick={handleReserve}
           onClick={() => setIsModalOpen(true)}
+          disabled={loading}
         >
-          Reserve
+           {loading ? <CircularProgress size={24} /> : "Reserve"}
         </Button>
       </Box>
       <ConfirmationModal

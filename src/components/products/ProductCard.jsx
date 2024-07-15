@@ -88,7 +88,7 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
   
     return formattedDate;
   }
-
+/*
   const findClothingBundleId = async (productId) => {
     const clothingBundle = await axios.get(`/api/products/owned-products`);
     let clothingBundleData = clothingBundle.data;
@@ -101,6 +101,7 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
       throw new Error(`Product with ID ${productId} not found.`);
     }
   };
+  */
   
   return (
     <>
@@ -220,7 +221,7 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
               sx={{ mt: 2, backgroundColor: theme.palette.green.main, color: 'white' }} 
               onClick={() => {
                 handleOpenModal(null)
-                findClothingBundleId(product.id)
+                //findClothingBundleId(product.id)
               }
               }
             >

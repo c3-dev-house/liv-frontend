@@ -1,9 +1,10 @@
 // src/pages/SignIn.jsx
 import React, { useState } from "react";
-import { Box, TextField, Button, Typography, Link, Container, Grid } from "@mui/material";
+import { Box, TextField, Button, Typography, Link, Container, Grid, CircularProgress } from "@mui/material";
 import { InfoOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
+import CustomAlert from "../components/CustomAlert";
 import axios from "../axiosConfig";
 
 /*
@@ -21,6 +22,9 @@ const SignIn = () => {
   const [error, setError] = useState("");
   const [usernameInfo,setUsernameInfo]=useState(false);
   const [passwordInfo,setPasswordInfo]=useState(false);
+  const [loading, setLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false); 
+  const [errorMessage, setErrorMessage] = useState(""); 
   const navigate = useNavigate();
   const { login, adminLogin} = useAuth();
   
@@ -28,29 +32,35 @@ const SignIn = () => {
   const handleSignIn = async () => {
     // Clear previous errors
     setError("");
-
+    setLoading(true);
     // Validate inputs
     if (!validateUsername(username) ||!validatePassword(password) ) {
       setError("Invalid username or password");
+      setLoading(false);
       return;
     }
 //Must be at least 6 characters long, contain at least one uppercase letter and one number.
 //Must be 3-15 characters and contain only letters, numbers, and underscores.
 
 
-    const response = await login(username, password);
-    if (response.success) {
-      // Check if the user needs to reset their password
-      if (response.needsPasswordReset) {
-        navigate('/create-new-password');
-      } else {
-        // Authentication successful
-        navigate('/');
-      }
+try {
+  const response = await login(username, password);
+  if (response.success) {
+    if (response.needsPasswordReset) {
+      navigate('/create-new-password');
     } else {
-      // Authentication failed
-      setError("Invalid username or password");
+      navigate('/');
     }
+  } else {
+    setError("Invalid username or password");
+  }
+} catch (error) {
+  console.error("Error signing in:", error);
+  setErrorMessage("Error signing in. Please try again."); 
+  setAlertOpen(true); 
+} finally {
+  setLoading(false); 
+}
   };
 
   const handleAdminSignIn = async () => {
@@ -60,6 +70,7 @@ const SignIn = () => {
     // Validate inputs
     if (!validateUsername(username) ||!validatePassword(password) ) {
       setError("Invalid username or password");
+      setLoading(false);
       return;
     }
 //Must be at least 6 characters long, contain at least one uppercase letter and one number.
@@ -176,8 +187,17 @@ const SignIn = () => {
               color="primary"
               sx={{ mt: 2, width: "100%" }}
               onClick={handleSignIn}
+              disabled={loading}
             >
-              Sign in
+              {loading ? <CircularProgress size={24} /> : "Sign in"} 
+            </Button>
+            <Button
+              variant="contained"
+              color="info"
+              sx={{ mt: 2, width: "100%" }}
+              onClick={handleAdminSignIn}
+            >
+              Sign in Admin
             </Button>
             <Button
               variant="contained"
@@ -190,6 +210,12 @@ const SignIn = () => {
           </Box>
         </Grid>
       </Grid>
+      <CustomAlert
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+        severity="error"
+        message={errorMessage}
+      />
     </Container>
   );
 };

@@ -7,7 +7,7 @@ import {
   Menu,
   MenuItem,
   Box,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
@@ -15,7 +15,7 @@ import {
   Route,
   Routes,
   useNavigate,
-  Navigate
+  Navigate,
 } from "react-router-dom";
 
 import Home from "../pages/Home.jsx";
@@ -31,6 +31,7 @@ import ForgotPassword from "../pages/ForgotPassword.jsx";
 import { useAuth } from "../context/AuthContext";
 import Beneficiaries from "../pages/Admin/Beneficiaries.jsx";
 import ReservationsAdmin from "../pages/Reservations/ReservationsAdmin.jsx";
+import BrandLineComponent from "./BrandLineComponent";
 
 const Layout = ({ children }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -43,7 +44,7 @@ const Layout = ({ children }) => {
     const checkAuth = async () => {
       // Assume this function checks if the user is authenticated
       // and updates the isAuthenticated state in useAuth context
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate async operation
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate async operation
       setLoading(false);
     };
     checkAuth();
@@ -67,9 +68,9 @@ const Layout = ({ children }) => {
   };
 
   const handleSignOut = () => {
-    logout(); 
-    navigate("/signin"); 
-    handleClose(); 
+    logout();
+    navigate("/signin");
+    handleClose();
   };
 
   return (
@@ -83,7 +84,10 @@ const Layout = ({ children }) => {
         margin: "0 auto",
       }}
     >
-      <AppBar position="static" sx={{ width: "100%" }}>
+      <AppBar
+        position="static"
+        sx={{ width: "100%", backgroundColor: "black", height: "65px" }}
+      >
         <Toolbar
           sx={{
             justifyContent: "space-between",
@@ -91,13 +95,22 @@ const Layout = ({ children }) => {
             margin: "0 auto",
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{ cursor: 'pointer' }}
-            onClick={handleNavigateHome}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}
           >
-            LIV
-          </Typography>
+            <Typography
+              variant="h6"
+              sx={{ cursor: "pointer" }}
+              onClick={handleNavigateHome}
+            >
+              Umthombo Marketplace
+            </Typography>
+            <BrandLineComponent />
+          </Box>
           <IconButton
             edge="end"
             color="inherit"
@@ -140,12 +153,14 @@ const Layout = ({ children }) => {
       {loading ? ( ///LOADER
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            // alignItems: 'center',
-            height: '100vh',
-            width: '100%',
-            zIndex: 9999, // Ensure the loader is above other content
+            height: "100vh",
+            width: "100%",
+            display: "flex",
+            backgroundColor: "rgba(255, 255, 255, 0)", 
+            zIndex: 9999, 
+            marginTop: "80px",
+            justifyContent: "center",
+            alignItems: "top",
           }}
         >
           <CircularProgress />
@@ -169,7 +184,10 @@ const Layout = ({ children }) => {
             <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" />} />
             <Route path="/allBeneficiaries" element={ <Beneficiaries />} />
             <Route path="/signin" element={<SignIn />} />
-            <Route path="/create-new-password" element={<CreateNewPassword />} />
+            <Route
+              path="/create-new-password"
+              element={<CreateNewPassword />}
+            />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/profile" element={isAuthenticated || isAdminAuthenticated ? <Profile /> : <Navigate to="/signin" />} />
             <Route path="/reservations" element={isAuthenticated ? <Reservations /> : <Navigate to="/signin" />} />

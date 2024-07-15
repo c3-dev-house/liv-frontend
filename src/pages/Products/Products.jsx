@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../axiosConfig";
-import { Typography, Box, Container, Grid } from "@mui/material";
+import { Typography, Box, Container, CircularProgress, Grid } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ProductsHeader from "../../components/products/ProductsHeader";
 import ProductCard from "../../components/products/ProductCard";
 import { useAuth } from "../../context/AuthContext";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import CustomAlert from "../../components/CustomAlert";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -17,10 +18,16 @@ const Products = () => {
   const { currentUser } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [addingLoading, setAddingLoading] = useState(false);
+  const [deletingLoading, setDeletingLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   
 
   useEffect(() => {
     const fetchBeneficiarySales = async () => {
+      setLoading(true);
       try {
         //const customerId = "7024877994031"; // hardcoded on Grace for now // Shopify_Id__c in user object
         const customerId = currentUser.Shopify_Id__c;
@@ -44,6 +51,10 @@ const Products = () => {
         setFilteredProducts(soldProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
+        setErrorMessage("Error fetching products. Please try again.");
+        setAlertOpen(true);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -123,53 +134,58 @@ const Products = () => {
   };
 
   const handleAddItem = async (product, newItem) => {
-    console.log("addItem reached:");
-    console.log("product:",product);
-    console.log("newItem:",newItem);
+    setAddingLoading(true);
+    try {
+      const maxId = product.items.length ? Math.max(...product.items.map((item) => parseInt(item.id, 10))) : 0;
+      const newId = maxId + 1;
+      newItem.id = newId;
+      setThisClothingBundleId(product.items[0].Clothing_Bundles_Id__c);
+      const clothingBundleId = product.items[0].Clothing_Bundles_Id__c;
 
-    const maxId = product.items.length
-      ? Math.max(...product.items.map((item) => parseInt(item.id, 10)))
-      : 0;
-    const newId = maxId + 1;
-    newItem.id = newId;
-    //const customerId = currentUser.Shopify_Id__c;
-    //console.log("customerId", customerId);    
-   // console.log(product.items[0].Clothing_Bundles_Id__c);
-   setThisClothingBundleId(product.items[0].Clothing_Bundles_Id__c);
-   const clothingBundleId = product.items[0].Clothing_Bundles_Id__c;
-     //const clothingBundle = await axios.get(`/api/products/owned-products/${customerId}`);
-     //let clothingBundleId = clothingBundle.data[0].clothingBundlesId;
-
-    const response = await axios.post(
-      `/api/items/addItem/${clothingBundleId}`,
-      newItem
-    );
-     console.log('Fetched products:', response.data);
-    // console.log('add item clicked');
-
-    // console.log(newItem);
-    // Trigger re-fetch
-    setFetchTrigger((prev) => !prev);
+      await axios.post(`/api/items/addItem/${clothingBundleId}`, newItem);
+      setFetchTrigger((prev) => !prev);
+    } catch (error) {
+      console.error("Error adding item:", error);
+      setErrorMessage("Error adding item. Please try again.");
+      setAlertOpen(true);
+    } finally {
+      setAddingLoading(false);
+    }
   };
 
   const handleEditItem = async (item, updatedItem) => {
-    await axios.patch(`/api/items/updateItem/${item}`, updatedItem);
-    // console.log('edit item clicked');
-    // console.log(item);
-    // console.log(updatedItem);
-    // Trigger re-fetch
-    setFetchTrigger((prev) => !prev);
+    try {
+      await axios.patch(`/api/items/updateItem/${item}`, updatedItem);
+      setFetchTrigger((prev) => !prev);
+    } catch (error) {
+      console.error("Error editing item:", error);
+      setErrorMessage("Error editing item. Please try again.");
+      setAlertOpen(true);
+    }
   };
+
+
   const handleDeleteItem = (item) => {
     setItemToDelete(item);
     setIsModalOpen(true);
   };
 
   const confirmDeleteItem = async () => {
+    setDeletingLoading(true);
     setIsModalOpen(false);
-    await axios.delete(`/api/items/deleteItem/${itemToDelete}`);
-    setFetchTrigger((prev) => !prev);
+    try {
+      await axios.delete(`/api/items/deleteItem/${itemToDelete}`);
+      setFetchTrigger((prev) => !prev);
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      setErrorMessage("Error deleting item. Please try again.");
+      setAlertOpen(true);
+    } finally {
+      setDeletingLoading(false);
+    }
   };
+
+ 
 
   return (
     <Container
@@ -189,25 +205,39 @@ const Products = () => {
         sortCriteria={sortCriteria}
         filterCriteria={filterCriteria}
       />
-      <Grid container spacing={2} sx={{ width: "100%" }}>
-        {filteredProducts.map((product, index) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-            <ProductCard
-              product={product}
-              onAddItem={handleAddItem}
-              onEditItem={handleEditItem}
-              onDeleteItem={handleDeleteItem}
-              setClothingBundleId={setThisClothingBundleId}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : filteredProducts.length === 0 ? (
+        <Typography variant="h6" sx={{ mt: 2 }}>No products to display at this stage.</Typography>
+      ) : (
+        <Grid container spacing={2} sx={{ width: "100%", mt: 2 }}>
+          {filteredProducts.map((product, index) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+              <ProductCard
+                product={product}
+                onAddItem={handleAddItem}
+                onEditItem={handleEditItem}
+                onDeleteItem={handleDeleteItem}
+                setClothingBundleId={setThisClothingBundleId}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      )}
       <ConfirmationModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={confirmDeleteItem}
         title="Delete Item"
         description="Are you sure you want to delete this item?"
+      />
+       <CustomAlert
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+        severity="error"
+        message={errorMessage}
       />
     </Container>
   );

@@ -9,7 +9,7 @@ const ProductCard = ({ product, selected, onSelect }) => {
     <Card
       onClick={() => onSelect(product.id)}
       sx={{
-        width: "120px",
+        width: "110px",
         margin: "5px",
         cursor: "pointer",
         backgroundColor: selected ? "rgba(33, 150, 243, 0.2)" : "white",

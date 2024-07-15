@@ -11,24 +11,29 @@ import {
   Select,
   FormControl,
   InputLabel,
+  CircularProgress
 } from "@mui/material";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ProductCard from "../../components/reservations/ProductCard";
 import { useAuth } from "../../context/AuthContext";
+import CustomAlert from "../../components/CustomAlert";
 
 const AddReservation = ({ onBack }) => {
   const navigate = useNavigate();
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [location, setLocation] = useState("KZN");
   const [products, setProducts] = useState([]);
-  const [customerId, setCustomerId] = useState("7024877994031");
+  //const [customerId, setCustomerId] = useState("");
   const { currentUser } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        
+        setLoading(true);
         const vendor = "KZN"; // fixed for now - todo: add category select? //or mvp2ish
         const response = await axios.get(`/api/products/vendor-products?vendor=${vendor}`);
         console.log('Fetched products:', response.data);
@@ -47,8 +52,12 @@ const AddReservation = ({ onBack }) => {
           console.log("activeProducts");
           console.log(activeProducts);
         setProducts(activeProducts);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching products:', error);
+        setErrorMessage("Server error. Contact administrator.");
+        setAlertOpen(true);
+        setLoading(false);
       }
     };
 
@@ -121,18 +130,32 @@ const AddReservation = ({ onBack }) => {
         <Typography variant="h6" sx={{ mb: 2 }}>
           Select bundles for reservation
         </Typography>
-        <Box
-          sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
-        >
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              selected={selectedProducts.includes(product.id)}
-              onSelect={handleSelectProduct}
-            />
-          ))}
-        </Box>
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "top", height: "100vh" }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            {products.length === 0 ? (
+              <Typography variant="body1" sx={{ textAlign: "center", marginTop: 4 }}>
+                No products currently available. Please try again later.
+              </Typography>
+            ) : (
+              <Box
+                sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+              >
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    selected={selectedProducts.includes(product.id)}
+                    onSelect={handleSelectProduct}
+                  />
+                ))}
+              </Box>
+            )}
+          </>
+        )}
         <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
         <Button
           variant="contained"
@@ -144,6 +167,12 @@ const AddReservation = ({ onBack }) => {
         </Button>
       </Box>
       </Box>
+      <CustomAlert
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+        severity="error"
+        message={errorMessage}
+      />
     </>
   );
 };

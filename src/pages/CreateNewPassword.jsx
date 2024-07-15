@@ -1,18 +1,24 @@
 import React, { useState } from "react";
-import { Box, TextField, Button, Typography, Container, Grid } from "@mui/material";
+import { Box, TextField, Button, Typography, Container, Grid, CircularProgress  } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 import axios from "../axiosConfig";
+import CustomAlert from "../components/CustomAlert";
 
 const CreateNewPassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); 
+  const [alertOpen, setAlertOpen] = useState(false); 
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const { currentUser, setCurrentUser } = useAuth();
 
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     if (validatePassword(password)) {
       try {
         // Call the resetPassword API endpoint
@@ -33,10 +39,14 @@ const CreateNewPassword = () => {
         navigate('/');
       } catch (error) {
         console.error('Password update failed', error);
-        setError('Failed to update password. Please try again.');
+        setErrorMessage('Failed to update password. Please try again.');
+        setAlertOpen(true);
+      } finally {
+        setLoading(false); // Stop loading
       }
     } else {
       setError("Password must be at least 6 characters long, contain at least one number, and include both lower and uppercase letters.");
+      setLoading(false);
     }
   };
 
@@ -129,10 +139,17 @@ const CreateNewPassword = () => {
           variant="contained"
           color="primary"
           sx={{ mt: 2, width: "100%" }}
+          disabled={loading} 
         >
-          Update
+          {loading ? <CircularProgress size={24} /> : "Update"} 
         </Button>
       </Box>
+      <CustomAlert
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+        severity="error"
+        message={errorMessage}
+      />
     </Container>
   );
 };
