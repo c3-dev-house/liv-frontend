@@ -80,19 +80,6 @@ const ReservationDetails = () => {
     }
   };
 
-  const handleMarkAsPaid = async () => {
-    setPaymentModalOpen(false);
-    try {
-      const productIds = reservation.products.map((product) => product.id);
-      await axios.post(`/api/orders/markAsPaid`, {
-        orderId: reservation.id,
-        productIds,
-      });
-      navigate(`/reservationsAdmin/${id}`); 
-    } catch (error) {
-      console.error("Error canceling order:", error);
-    }
-  };
 
   if (loading) {
     return (
