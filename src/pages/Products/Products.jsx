@@ -12,7 +12,7 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [fetchTrigger, setFetchTrigger] = useState(false);
-  const [thisClothingBundleId, setThisClothingBundleId] = useState("");
+  const [clothingBundleId, setClothingBundleId] = useState("");
   const [sortCriteria, setSortCriteria] = useState("");
   const [filterCriteria, setFilterCriteria] = useState("");
   const { currentUser } = useAuth();
@@ -34,7 +34,7 @@ const Products = () => {
         const response = await axios.get(`/api/products/owned-products/${customerId}`);
         //const response = await axios.get(`/api/products/owned-products`); - used for hardcoded custId
         // console.log('Fetched products:', response.data);
-        console.log("Response",response);
+        // console.log("Response",response);
         //const { orders } = response.data;
         const soldProducts = response.data.map((product) => ({
           id: product.id,
@@ -46,7 +46,7 @@ const Products = () => {
           orderTime: product.time,
           items: product.items,
         }));
-        console.log("soldProducts", soldProducts);
+        // console.log("soldProducts", soldProducts);
         setProducts(soldProducts);
         setFilteredProducts(soldProducts);
       } catch (error) {
@@ -139,8 +139,10 @@ const Products = () => {
       const maxId = product.items.length ? Math.max(...product.items.map((item) => parseInt(item.id, 10))) : 0;
       const newId = maxId + 1;
       newItem.id = newId;
-      setThisClothingBundleId(product.items[0].Clothing_Bundles_Id__c);
-      const clothingBundleId = product.items[0].Clothing_Bundles_Id__c;
+      // console.log(product);
+      // console.log(clothingBundleId);
+      // setClothingBundleId(product.items[0].Clothing_Bundles_Id__c);
+      // const clothingBundleId = product.items[0].Clothing_Bundles_Id__c;
 
       await axios.post(`/api/items/addItem/${clothingBundleId}`, newItem);
       setFetchTrigger((prev) => !prev);
@@ -220,7 +222,7 @@ const Products = () => {
                 onAddItem={handleAddItem}
                 onEditItem={handleEditItem}
                 onDeleteItem={handleDeleteItem}
-                setClothingBundleId={setThisClothingBundleId}
+                setClothingBundleId={setClothingBundleId}
               />
             </Grid>
           ))}
