@@ -21,7 +21,7 @@ const ConfirmReservation = () => {
 //todo fix contents description display.
   const handleReserve = async () => {
     setIsModalOpen(false);
-    console.log("Reservation confirmed", reservation);
+    // console.log("Reservation confirmed", reservation);
     //todo supply reserved products id to requests responsible for creating a order with products supplied, as well as //keep as is.. no api call
     // the required id of the linked customer (linked in user's shopify customer id or similar) to create order
     //return 200 ok once confirmed. redirect to reservations.
@@ -37,7 +37,7 @@ const ConfirmReservation = () => {
         variantIds,
         productIds,
       });
-      console.log("Order created successfully", response.data);
+      // console.log("Order created successfully", response.data);
 
       // Navigate back to reservations page
       setLoading(false);

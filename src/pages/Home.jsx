@@ -52,14 +52,13 @@ const Home = () => {
           response = await axios.get(`/api/overview/beneficiarySales/${salesforceId}`);
           const overview = response.data;
           setBeneficiaryOverview(overview);
-
+          // console.log(beneficiaryOverview);
           if (overview && overview.totalSales !== 0) {
             const percentage = ((overview.totalProfit  / overview.totalSales) * 100).toFixed(0);
             setProfitPercentage(percentage);
           }
         } else {
-          setError("Please log in"); // Customize this error message
-          setErrorMessage('Error');
+          setErrorMessage("Please log in");
           setAlertOpen(true); // Open custom alert
         }
       } catch (error) {

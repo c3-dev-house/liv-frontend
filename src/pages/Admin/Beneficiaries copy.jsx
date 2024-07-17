@@ -25,7 +25,7 @@ const Beneficiaries = () => {
         const customerId = currentUser.Shopify_Id__c;
         //const customerId = "7024877994031"; // hardcoded on Grace for now
         const response = await axios.get(`/api/orders/customer-orders/${customerId}`);
-        console.log("Fetched reservations:", response.data.orders);
+        // console.log("Fetched reservations:", response.data.orders);
         setReservations(response.data.orders);
       } catch (error) {
         console.error("Error fetching reservations:", error);

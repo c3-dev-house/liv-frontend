@@ -23,6 +23,7 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
   const [editItem, setEditItem] = useState(null);
   const [isAdd, setIsAdd] = useState(false);
   const [isDelete,setIsDelete]=useState(false);
+  
 
   useEffect(() => {
     if (isDelete && editItem) {
@@ -30,11 +31,13 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
       setIsDelete(false);
       handleCloseModal();
     }
+    // console.log("Expanded",expanded);
   }, [isDelete, editItem, onDeleteItem]);
 
   const theme = useTheme();
 
   const handleExpand = () => {
+    // console.log('Clicked')
     setExpanded(!expanded);
   };
 
@@ -88,20 +91,29 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
   
     return formattedDate;
   }
-/*
+
   const findClothingBundleId = async (productId) => {
-    const clothingBundle = await axios.get(`/api/products/owned-products`);
+    const userData = localStorage.getItem('user');
+    let shopifyId;
+    if (userData) {
+        const parsedUserData = JSON.parse(userData);
+        shopifyId = parsedUserData.Shopify_Id__c;
+        // console.log('Shopify ID:', shopifyId);
+    }
+    const clothingBundle = await axios.get(`/api/products/owned-products/${shopifyId}`);
+    // console.log('ClothingBundleId',clothingBundle);
     let clothingBundleData = clothingBundle.data;
 
     const product = clothingBundleData.find(bundle => bundle.id === productId);
+    // console.log("Product",product);
     if (product) {
-      setClothingBundleId(product.clothingBundlesId)
-      return product.clothingBundlesId;
+      setClothingBundleId(product.clothingBundlesIds)
+      return product.clothingBundlesIds;
     } else {
       throw new Error(`Product with ID ${productId} not found.`);
     }
   };
-  */
+  
   
   return (
     <>
@@ -221,7 +233,7 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
               sx={{ mt: 2, backgroundColor: theme.palette.green.main, color: 'white' }} 
               onClick={() => {
                 handleOpenModal(null)
-                //findClothingBundleId(product.id)
+                findClothingBundleId(product.id)
               }
               }
             >
@@ -237,6 +249,8 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
         initialData={editItem}
         isAdd={isAdd}
         setIsDelete={setIsDelete}
+        setExpanded={setExpanded}
+        expanded={expanded}
       />
     </>
   );

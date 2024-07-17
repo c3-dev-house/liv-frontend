@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, B
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from '@mui/material/styles';
 
-const ProductEditModal = ({ open, onClose, onSubmit, initialData, isAdd,setIsDelete }) => {
+const ProductEditModal = ({ open, onClose, onSubmit, initialData, isAdd,setIsDelete,setExpanded,expanded }) => {
   const theme = useTheme();
   const [formData, setFormData] = useState({
     quantity: '',
@@ -41,6 +41,8 @@ const ProductEditModal = ({ open, onClose, onSubmit, initialData, isAdd,setIsDel
       date: new Date().toISOString().split('T')[0], // Automatically set date
     };
     onSubmit(updatedData);
+    setExpanded(true);
+    // console.log("Submit")
   };
 
   const handleReset = () => {
