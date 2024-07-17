@@ -60,25 +60,32 @@ const SignIn = () => {
   }
 };
 
-  const handleAdminSignIn = async () => {
-    // Clear previous errors
-    setError("");
+const handleAdminSignIn = async () => {
+  // Clear previous errors
+  setError("");
+  setLoading(true);
+  // Validate inputs
+  if (!validateUsername(username) || !validatePassword(password)) {
+    setError("Invalid username or password");
+    setLoading(false);
+    return;
+  }
 
-    // Validate inputs
-    if (!validateUsername(username) ||!validatePassword(password) ) {
-      setError("Invalid username or password");
-      setLoading(false);
-      return;
-    }
-
+  try {
     const response = await adminLogin(username, password);
     if (response.success) {
       navigate('/allBeneficiaries');
     } else {
-      // Authentication failed
       setError("Invalid username or password");
     }
-  };
+  } catch (error) {
+    console.error("Error signing in:", error);
+    setErrorMessage("Error signing in. Please try again."); 
+    setAlertOpen(true); 
+  } finally {
+    setLoading(false);
+  }
+};
 
 
 
@@ -191,16 +198,9 @@ const SignIn = () => {
               color="info"
               sx={{ mt: 2, width: "100%" }}
               onClick={handleAdminSignIn}
+              disabled={loading}
             >
-              Sign in Admin
-            </Button>
-            <Button
-              variant="contained"
-              color="info"
-              sx={{ mt: 2, width: "100%" }}
-              onClick={handleAdminSignIn}
-            >
-              Sign in Admin
+              {loading ? <CircularProgress size={24} /> : "Admin Sign in"} 
             </Button>
           </Box>
         </Grid>

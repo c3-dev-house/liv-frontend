@@ -14,6 +14,7 @@ const ReservationDetails = () => {
   const [reservation, setReservation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cancelLoading, setCancelLoading] = useState(false);
+  const [markPaidLoading, setMarkPaidLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,6 +65,7 @@ const ReservationDetails = () => {
 
   const handleMarkAsPaid = async () => {
     setPaymentModalOpen(false);
+    setMarkPaidLoading(true);
     try {
       const productIds = reservation.products.map((product) => product.id);
       await axios.post(`/api/orders/markAsPaid`, {
@@ -76,7 +78,7 @@ const ReservationDetails = () => {
       setErrorMessage("Server error. Contact administrator.");
       setAlertOpen(true);
     } finally {
-      setCancelLoading(false);
+      setMarkPaidLoading(false);
     }
   };
 
@@ -173,8 +175,9 @@ const ReservationDetails = () => {
           sx={{ mt: 2}}
           //onClick={handleCancelOrder}
           onClick={() => setPaymentModalOpen(true)}
+          disabled={markPaidLoading}
         >
-          Mark As Paid
+          {markPaidLoading ? <CircularProgress size={24} /> : "Mark as Paid"}
         </Button>
       )}
       </div>

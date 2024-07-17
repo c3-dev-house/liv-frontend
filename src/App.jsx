@@ -41,11 +41,11 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
       <Router>
+      <AuthProvider>
       <Layout />
-      </Router>
       </AuthProvider>
+      </Router>
     </ThemeProvider>
   );
 }
