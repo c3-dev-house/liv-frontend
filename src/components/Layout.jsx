@@ -36,19 +36,23 @@ import BrandLineComponent from "./BrandLineComponent";
 const Layout = ({ children }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
-  const { isAuthenticated, logout,isAdminAuthenticated } = useAuth();
+  const { isAuthenticated, isAdminAuthenticated, logout, checkAuth} = useAuth();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // console.log(isAdminAuthenticated)
-    const checkAuth = async () => {
+    console.log(isAdminAuthenticated)
+    
+    const timeout = async () => {
+      checkAuth()
       // Assume this function checks if the user is authenticated
       // and updates the isAuthenticated state in useAuth context
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate async operation
       setLoading(false);
     };
-    checkAuth();
+    timeout();
+    //checkAuth()
   }, []);
+  
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
