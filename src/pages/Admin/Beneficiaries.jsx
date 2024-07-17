@@ -25,7 +25,7 @@ const Beneficiaries = () => {
     const fetchBeneficiaries = async () => {
       try {
         const response = await axios.get(`/api/admin/allBeneficiaries`);
-        console.log("Fetched beneficiaries:", response.data);
+        // console.log("Fetched beneficiaries:", response.data);
         setBeneficiaries(response.data);
       } catch (error) {
         console.error("Error fetching reservations:", error);
@@ -36,7 +36,6 @@ const Beneficiaries = () => {
   }, []);
 
   const handleNavigateTo = (path) => {
-    console.log(path);
     navigate(path);
   };
 

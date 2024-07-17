@@ -23,6 +23,7 @@ const AddReservation = ({ onBack }) => {
   const navigate = useNavigate();
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [location, setLocation] = useState("KZN");
+  const[category,setCategory] = useState("All");
   const [products, setProducts] = useState([]);
   //const [customerId, setCustomerId] = useState("");
   const { currentUser } = useAuth();
@@ -34,9 +35,16 @@ const AddReservation = ({ onBack }) => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const vendor = "KZN"; // fixed for now - todo: add category select? //or mvp2ish
-        const response = await axios.get(`/api/products/vendor-products?vendor=${vendor}`);
-        console.log('Fetched products:', response.data);
+        const vendor = location;// fixed for now - todo: add category select? //or mvp2ish
+        const productType = category;
+        let response;
+        if(category === "All"){
+          response = await axios.get(`/api/products/vendor-products?vendor=${vendor}`);
+        }else{
+          response = await axios.get(`/api/products/vendor-products/category?vendor=${vendor}&product_type=${productType}`);
+        }
+        
+        // console.log('Fetched products:', response.data);
 
         const activeProducts = response.data
           .filter(product => product.status === 'active')
@@ -49,8 +57,8 @@ const AddReservation = ({ onBack }) => {
             variantId: product.variants[0].id,
             location: product.vendor,
           }));
-          console.log("activeProducts");
-          console.log(activeProducts);
+          // console.log("activeProducts");
+          // console.log(activeProducts);
         setProducts(activeProducts);
         setLoading(false);
       } catch (error) {
@@ -62,7 +70,7 @@ const AddReservation = ({ onBack }) => {
     };
 
     fetchProducts();
-  }, []);
+  }, [location,category]);
 
   const handleNavigateTo = (path) => {
     navigate(path);
@@ -71,7 +79,10 @@ const AddReservation = ({ onBack }) => {
   const handleLocationChange = (event) => {
     setLocation(event.target.value);
   };
-
+  
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
+  };
   const handleSelectProduct = (productId) => {
     setSelectedProducts((prevSelected) =>
       prevSelected.includes(productId)
@@ -92,7 +103,7 @@ const AddReservation = ({ onBack }) => {
           quantity: 1, 
         })),
     };
-    console.log("reservation", reservation);
+    // console.log("reservation", reservation);
     navigate("/confirm-reservation", { state: { reservation } });
   };
 
@@ -112,7 +123,7 @@ const AddReservation = ({ onBack }) => {
         </Typography>
       </Toolbar>
       <Box sx={{ padding: "20px" }}>
-        <FormControl fullWidth sx={{ mb: 3 }} size="small">
+        <FormControl fullWidth sx={{ mb: 3, gap:2 }} size="small">
           <InputLabel id="location-label">Location</InputLabel>
           <Select
             labelId="location-label"
@@ -123,10 +134,61 @@ const AddReservation = ({ onBack }) => {
             size="small"
           >
             <MenuItem value={"KZN"}>KZN</MenuItem>
-            <MenuItem value={"LIV Cape Town"}>LIV Cape Town</MenuItem>
-            <MenuItem value={"LIV Johannesburg"}>LIV Johannesburg</MenuItem>
+            <MenuItem value={"LP"}>LP</MenuItem>
+            <MenuItem value={"MP"}>MP</MenuItem>
+            <MenuItem value={"NC"}>NC</MenuItem>
+            <MenuItem value={"NW"}>NW</MenuItem>
+            <MenuItem value={"EC"}>EC</MenuItem>
+            <MenuItem value={"FS"}>FS</MenuItem>
+            <MenuItem value={"GAU"}>GAU</MenuItem>
           </Select>
         </FormControl>
+        <FormControl fullWidth sx={{ mb: 3, gap:2 }} size="small">
+          <InputLabel id="category-label">Category</InputLabel>
+          <Select
+            labelId="category-label"
+            id="category-select"
+            value={category}
+            label="Category"
+            onChange={handleCategoryChange}
+            size="small"
+          >
+            <MenuItem value={"All"}>All</MenuItem>
+            <MenuItem value={"Men's Clothing - Second Hand"}>Men's Clothing - Second Hand</MenuItem>
+            <MenuItem value={"Men's Clothing - Mix (New + Used)"}>Men's Clothing - Mix (New + Used)</MenuItem>
+
+            <MenuItem value={"Women's Clothing - Brand New"}>Women's Clothing - Brand New</MenuItem>
+            <MenuItem value={"Women's Clothing - Second Hand"}>Women's Clothing - Second Hand</MenuItem>
+            <MenuItem value={"Women's Clothing - Mix (New + Used)"}>Women's Clothing - Mix (New + Used)</MenuItem>
+
+            <MenuItem value={"Male Teens Clothing - Brand New"}>Male Teens Clothing - Brand New</MenuItem>
+            <MenuItem value={"Male Teens Clothing - Second Hand"}>Male Teens Clothing - Second Hand</MenuItem>
+            <MenuItem value={"Male Teens Clothing - Mix (New + Used)"}>Male Teens Clothing - Mix (New + Used)</MenuItem>
+
+            <MenuItem value={"Female Teens Clothing - Brand New"}>Female Teens Clothing - Brand New</MenuItem>
+            <MenuItem value={"Female Teens Clothing - Second Hand"}>Female Teens Clothing - Second Hand</MenuItem>
+            <MenuItem value={"Female Teens Clothing - Mix (New + Used)"}>Female Teens Clothing - Mix (New + Used)</MenuItem>
+
+            <MenuItem value={"Boys: Kids/Preteens Clothing - Brand New"}>Boys: Kids/Preteens Clothing - Brand New</MenuItem>
+            <MenuItem value={"Boys: Kids/Preteens Clothing - Second Hand"}>Boys: Kids/Preteens Clothing - Second Hand</MenuItem>
+            <MenuItem value={"Boys: Kids/Preteens Clothing - Mix (New + Used)"}>Boys: Kids/Preteens Clothing - Mix (New + Used)</MenuItem>
+
+            <MenuItem value={"Girls: Kids/Preteens Clothing - Brand New"}>Girls: Kids/Preteens Clothing - Brand New</MenuItem>
+            <MenuItem value={"Girls: Kids/Preteens Clothing - Second Hand"}>Girls: Kids/Preteens Clothing - Second Hand</MenuItem>
+            <MenuItem value={"Girls: Kids/Preteens Clothing - Mix (New + Used)"}>Girls: Kids/Preteens Clothing - Mix (New + Used)</MenuItem>
+
+            <MenuItem value={"Infant/Toddler Clothing - Brand New"}>Infant/Toddler Clothing - Brand New</MenuItem>
+            <MenuItem value={"Infant/Toddler Clothing - Second Hand"}>Infant/Toddler Clothing - Second Hand</MenuItem>
+            <MenuItem value={"Infant/Toddler Clothing - Mix (New + Used)"}>Infant/Toddler Clothing - Mix (New + Used)</MenuItem>
+
+            <MenuItem value={"Mixed Bundle - Brand New"}>Mixed Bundle - Brand New</MenuItem>
+            <MenuItem value={"Mixed Bundle - Second Hand"}>Mixed Bundle - Second Hand</MenuItem>
+            <MenuItem value={"Mixed Bundle - Mix (New + Used)"}>Mixed Bundle - Mix (New + Used)</MenuItem>
+
+
+          </Select>
+        </FormControl>
+        
         <Typography variant="h6" sx={{ mb: 2 }}>
           Select bundles for reservation
         </Typography>

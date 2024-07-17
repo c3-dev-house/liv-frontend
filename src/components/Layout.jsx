@@ -40,7 +40,7 @@ const Layout = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(isAdminAuthenticated)
+    // console.log(isAdminAuthenticated)
     const checkAuth = async () => {
       // Assume this function checks if the user is authenticated
       // and updates the isAuthenticated state in useAuth context

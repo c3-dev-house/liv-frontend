@@ -28,8 +28,8 @@ const ReservationDetails = () => {
     const fetchReservation = async () => {
       try {
         const response = await axios.get(`/api/orders/${id}`);
-        console.log("response.data");
-        console.log(response.data);
+        // console.log("response.data");
+        // console.log(response.data);
         setReservation(response.data.order);
       } catch (error) {
         console.error("Error fetching reservation:", error);
@@ -79,7 +79,6 @@ const ReservationDetails = () => {
       setCancelLoading(false);
     }
   };
-
 
   if (loading) {
     return (

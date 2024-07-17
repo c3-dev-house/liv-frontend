@@ -194,14 +194,6 @@ const SignIn = () => {
             >
               Sign in Admin
             </Button>
-            <Button
-              variant="contained"
-              color="info"
-              sx={{ mt: 2, width: "100%" }}
-              onClick={handleAdminSignIn}
-            >
-              Sign in Admin
-            </Button>
           </Box>
         </Grid>
       </Grid>

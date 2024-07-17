@@ -30,7 +30,7 @@ const Reservations = () => {
         setLoading(true);
         const customerId = currentUser.Shopify_Id__c;
         const response = await axios.get(`/api/orders/customer-orders/${customerId}`);
-        console.log("Fetched reservations:", response.data.orders);
+        // console.log("Fetched reservations:", response.data.orders);
         setReservations(response.data.orders);
         setLoading(false);
       } catch (error) {
