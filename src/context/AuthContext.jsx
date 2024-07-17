@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { dummyUsers } from '../dummyUsers';
 import axios from "../axiosConfig";
 import handleAdminSignIn from "../../src/pages/SignIn";
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -11,10 +12,11 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAdminAuthenticated,setIsAdminAuthenticated] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [profileData, setProfileData] = useState({});
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const login = async (username, password) => {
     try {
@@ -70,19 +72,24 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
     setIsAuthenticated(false);
     setCurrentUser(null);
+    setIsAdminAuthenticated(false);
   };
  //verify endpoint for token?
-  const checkAuth = () => {
-    const token = localStorage.getItem('token');
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (token && user) {
-      setIsAuthenticated(true);
-      setCurrentUser(user);
-    } else {
-      setIsAuthenticated(false);
-      setCurrentUser(null);
-    }
-  };
+ const checkAuth = () => {
+  console.log('check auth triggered');
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (token && user) {
+    console.log('token and user case');
+    setIsAuthenticated(true);
+    setCurrentUser(user);
+  } else if (!isAdminAuthenticated) {
+    console.log('!isAdmin');
+    navigate("/signin");
+  }
+  //navigate("/signin");
+  //setLoading(false);
+};
 
   useEffect(() => {
     checkAuth();
@@ -138,6 +145,7 @@ export const AuthProvider = ({ children }) => {
     login, 
     logout,
     adminLogin,
+    checkAuth,
     fetchBeneficiaryProfile,
     profileData,
     setProfileData
