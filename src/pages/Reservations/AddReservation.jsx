@@ -35,8 +35,8 @@ const AddReservation = ({ onBack }) => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const vendor = location;// fixed for now - todo: add category select? //or mvp2ish
-        const productType = category;
+        const vendor = encodeURIComponent(location);
+        const productType = encodeURIComponent(category);
         let response;
         if(category === "All"){
           response = await axios.get(`/api/products/vendor-products?vendor=${vendor}`);
@@ -154,6 +154,7 @@ const AddReservation = ({ onBack }) => {
             size="small"
           >
             <MenuItem value={"All"}>All</MenuItem>
+            <MenuItem value={"Men's Clothing - Second Hand"}>Men's Clothing - Brand New</MenuItem>
             <MenuItem value={"Men's Clothing - Second Hand"}>Men's Clothing - Second Hand</MenuItem>
             <MenuItem value={"Men's Clothing - Mix (New + Used)"}>Men's Clothing - Mix (New + Used)</MenuItem>
 
