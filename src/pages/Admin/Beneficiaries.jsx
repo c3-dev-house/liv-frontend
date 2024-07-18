@@ -121,11 +121,10 @@ const Beneficiaries = () => {
                       <IconButton
                         aria-label="view reservation"
                         color="primary"
-                        onClick={() =>
-                          handleNavigateTo(
-                            `/reservationsAdmin/${user.Shopify_Id__c}`
-                          )
-                        }
+                        onClick={() => {
+                          localStorage.setItem('shopifyId', user.Shopify_Id__c);
+                          handleNavigateTo(`/reservationsAdmin/${user.Shopify_Id__c}`);
+                        }}
                       >
                         <ArrowForwardIcon />
                       </IconButton>
