@@ -95,6 +95,17 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
+  const getSalesforceId = async()=>{
+    let salesforceId;
+    const user = JSON.parse(localStorage.getItem('shopifyId'));
+    console.log(user);
+        if (user) {
+          salesforceId = user;
+        }
+      console.log(salesforceId)
+    return salesforceId;
+  }
+
   const fetchBeneficiaryProfile = async () => {
     try {
       const storedProfile = localStorage.getItem('profile');
@@ -148,7 +159,8 @@ export const AuthProvider = ({ children }) => {
     checkAuth,
     fetchBeneficiaryProfile,
     profileData,
-    setProfileData
+    setProfileData,
+    getSalesforceId,
   };
 
   return (

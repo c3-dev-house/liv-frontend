@@ -36,12 +36,13 @@ import BrandLineComponent from "./BrandLineComponent";
 const Layout = ({ children }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
-  const { isAuthenticated, isAdminAuthenticated, logout, checkAuth} = useAuth();
+  const { isAuthenticated, isAdminAuthenticated, logout, checkAuth,getSalesforceId} = useAuth();
+  // const { isAuthenticated, isAdminAuthenticated, logout, checkAuth} = useAuth();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     console.log(isAdminAuthenticated)
-    
+    console.log(getSalesforceId());
     const timeout = async () => {
       checkAuth()
       // Assume this function checks if the user is authenticated
@@ -66,8 +67,13 @@ const Layout = ({ children }) => {
     navigate("/");
   };
 
-  const handleNavigateTo = (path) => {
-    navigate(path);
+  const handleNavigateTo = async (path) => {
+    if (typeof path === "function") {
+      const resolvedPath = await path();
+      navigate(resolvedPath);
+    } else {
+      navigate(path);
+    }
     handleClose();
   };
 
@@ -123,35 +129,68 @@ const Layout = ({ children }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            sx={{
-              mt: "30px",
-            }}
-          >
-            <MenuItem onClick={() => handleNavigateTo("/profile")}>
-              Profile
-            </MenuItem>
-            <MenuItem onClick={() => handleNavigateTo("/reservations")}>
-              Reservations
-            </MenuItem>
-            <MenuItem onClick={() => handleNavigateTo("/products")}>
-              Products
-            </MenuItem>
-            <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
-          </Menu>
+          {isAuthenticated && (
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              sx={{
+                mt: "30px",
+              }}
+            >
+              <MenuItem onClick={() => handleNavigateTo("/profile")}>
+                Profile
+              </MenuItem>
+              <MenuItem onClick={() => handleNavigateTo("/reservations")}>
+                Reservations
+              </MenuItem>
+              <MenuItem onClick={() => handleNavigateTo("/products")}>
+                Products
+              </MenuItem>
+              <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
+            </Menu>
+          )}
+          {isAdminAuthenticated && (
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              sx={{
+                mt: "30px",
+              }}
+            >
+              <MenuItem onClick={() => handleNavigateTo("/allBeneficiaries")}>
+                Beneficiaries
+              </MenuItem>
+              <MenuItem onClick={() => handleNavigateTo(async () => `/reservationsAdmin/${await getSalesforceId()}`)}>
+                Reservations
+              </MenuItem>
+              {/* <MenuItem onClick={() => handleNavigateTo(`/reservations`)}>
+                Reservations
+              </MenuItem> */}
+              <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
+            </Menu>
+          )}
         </Toolbar>
       </AppBar>
       {loading ? ( ///LOADER
