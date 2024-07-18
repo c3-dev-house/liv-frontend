@@ -236,8 +236,8 @@ const Layout = ({ children }) => {
             <Route path="/reservations" element={isAuthenticated ? <Reservations /> : <Navigate to="/signin" />} />
             <Route path="/reservationsAdmin/:id" element={isAuthenticated || isAdminAuthenticated ?<ReservationsAdmin />: <Navigate to="/signin" />}/>
             <Route path="/reservations/:id" element={isAuthenticated || isAdminAuthenticated ? <ReservationDetails /> : <Navigate to="/signin" />} />
-            <Route path="/reservations/add" element={isAuthenticated ? <AddReservation /> : <Navigate to="/signin" />} />
-            <Route path="/confirm-reservation" element={isAuthenticated ? <ConfirmReservation /> : <Navigate to="/signin" />} />
+            <Route path="/reservations/add" element={isAuthenticated || isAdminAuthenticated ? <AddReservation /> : <Navigate to="/signin" />} />
+            <Route path="/confirm-reservation" element={isAuthenticated  || isAdminAuthenticated ? <ConfirmReservation /> : <Navigate to="/signin" />} />
             <Route path="/products" element={isAuthenticated ? <Products /> : <Navigate to="/signin" />} />
           </Routes>
         </Box>

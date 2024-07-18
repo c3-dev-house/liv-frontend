@@ -68,7 +68,6 @@ const Beneficiaries = () => {
         <BeneficiariesHeader
           title="Beneficiaries"
           onBack={() => window.history.back()}
-          onAdd={() => handleNavigateTo("/reservations/add")}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
         />

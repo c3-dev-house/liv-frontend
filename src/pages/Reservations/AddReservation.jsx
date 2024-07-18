@@ -26,7 +26,7 @@ const AddReservation = ({ onBack }) => {
   const[category,setCategory] = useState("All");
   const [products, setProducts] = useState([]);
   //const [customerId, setCustomerId] = useState("");
-  const { currentUser } = useAuth();
+  const { currentUser,isAdminAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -92,7 +92,19 @@ const AddReservation = ({ onBack }) => {
   };
 
   const handlePlaceOrder = () => {
-    const customerId = currentUser.Shopify_Id__c;
+    let customerId;
+    if (isAdminAuthenticated) {
+      customerId = JSON.parse(localStorage.getItem("shopifyId"));
+    } else {
+      customerId = currentUser.Shopify_Id__c;
+    }
+
+    if (!customerId) {
+      setErrorMessage("Customer ID not found. Please contact the administrator.");
+      setAlertOpen(true);
+      return;
+    }
+
     const reservation = {
       customerId,
       location,
@@ -100,11 +112,10 @@ const AddReservation = ({ onBack }) => {
         .filter((product) => selectedProducts.includes(product.id))
         .map((product) => ({
           ...product,
-          quantity: 1, 
+          quantity: 1,
         })),
     };
-    // console.log("reservation", reservation);
-    navigate("/confirm-reservation", { state: { reservation } });
+    navigate("/confirm-reservation", { state: { reservation,isAdminAuthenticated } });
   };
 
   return (

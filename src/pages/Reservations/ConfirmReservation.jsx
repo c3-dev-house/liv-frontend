@@ -12,7 +12,7 @@ import CustomAlert from "../../components/CustomAlert";
 const ConfirmReservation = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { reservation } = location.state;
+  const { reservation,isAdminAuthenticated } = location.state;
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -32,6 +32,7 @@ const ConfirmReservation = () => {
 
     try {
       setLoading(true);
+      console.log(reservation);
       const response = await axios.post("/api/orders/create", {
         customerId,
         variantIds,
@@ -41,7 +42,11 @@ const ConfirmReservation = () => {
 
       // Navigate back to reservations page
       setLoading(false);
-      navigate("/reservations");
+      if(isAdminAuthenticated){
+        navigate(`/reservationsAdmin/${customerId}`);
+      }else{
+        navigate("/reservations");
+      }
     } catch (error) {
       console.error("Error creating order", error);
       if (error.response && error.response.data) {
