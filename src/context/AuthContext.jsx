@@ -70,6 +70,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('profile');
+    localStorage.removeItem('shopifyId');
     setIsAuthenticated(false);
     setCurrentUser(null);
     setIsAdminAuthenticated(false);
