@@ -211,7 +211,9 @@ const handleAdminSignIn = async () => {
         severity="error"
         message={errorMessage}
       />
+      Umthombo Marketplace: <Link>Join the Beneficiary Program</Link>
     </Container>
+    
   );
 };
 

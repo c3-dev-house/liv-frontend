@@ -7,6 +7,7 @@ import ProductCard from "../../components/products/ProductCard";
 import { useAuth } from "../../context/AuthContext";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import CustomAlert from "../../components/CustomAlert";
+import Spinner from "../../components/Spinner";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -208,9 +209,14 @@ const Products = () => {
         filterCriteria={filterCriteria}
       />
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <CircularProgress />
-        </Box>
+        <>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <CircularProgress />
+          </Box>
+          {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 4,ml:'60px'}}>
+            <Spinner />
+          </Box> */}
+        </>
       ) : filteredProducts.length === 0 ? (
         <Typography variant="h6" sx={{ mt: 2 }}>No products to display at this stage.</Typography>
       ) : (
