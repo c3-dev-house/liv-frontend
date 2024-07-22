@@ -32,6 +32,7 @@ import { useAuth } from "../context/AuthContext";
 import Beneficiaries from "../pages/Admin/Beneficiaries.jsx";
 import ReservationsAdmin from "../pages/Reservations/ReservationsAdmin.jsx";
 import BrandLineComponent from "./BrandLineComponent";
+import Onboarding from "../pages/Onboarding/Onboarding.jsx";
 
 const Layout = ({ children }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -157,6 +158,9 @@ const Layout = ({ children }) => {
               <MenuItem onClick={() => handleNavigateTo("/products")}>
                 Products
               </MenuItem>
+              <MenuItem onClick={() => handleNavigateTo("/register")}>
+                Register
+              </MenuItem>
               <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
             </Menu>
           )}
@@ -239,6 +243,7 @@ const Layout = ({ children }) => {
             <Route path="/reservations/add" element={isAuthenticated ? <AddReservation /> : <Navigate to="/signin" />} />
             <Route path="/confirm-reservation" element={isAuthenticated ? <ConfirmReservation /> : <Navigate to="/signin" />} />
             <Route path="/products" element={isAuthenticated ? <Products /> : <Navigate to="/signin" />} />
+            <Route path="/register" element={<Onboarding />} />
           </Routes>
         </Box>
       )}
