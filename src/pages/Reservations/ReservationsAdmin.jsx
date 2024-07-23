@@ -64,7 +64,7 @@ const ReservationsAdmin = () => {
       >
         <AdminReservationsHeader
           title="Reservations"
-          onBack={() => window.history.back()}
+          onBack={() => handleNavigateTo("/allBeneficiaries")}
           onAdd={() => handleNavigateTo("/reservations/add")}
         />
         {loading ? (

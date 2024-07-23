@@ -32,6 +32,7 @@ import { useAuth } from "../context/AuthContext";
 import Beneficiaries from "../pages/Admin/Beneficiaries.jsx";
 import ReservationsAdmin from "../pages/Reservations/ReservationsAdmin.jsx";
 import BrandLineComponent from "./BrandLineComponent";
+import Onboarding from "../pages/Onboarding/Onboarding.jsx";
 
 const Layout = ({ children }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -224,7 +225,13 @@ const Layout = ({ children }) => {
           }}
         >
           <Routes>
-            <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" />} />
+            <Route path="/" element={isAuthenticated ? (<Home />) : isAdminAuthenticated ? (
+              <Beneficiaries />
+            ) : (
+              <Navigate to="/signin" />
+            )
+          }
+        />
             <Route path="/allBeneficiaries" element={ <Beneficiaries />} />
             <Route path="/signin" element={<SignIn />} />
             <Route
@@ -239,6 +246,7 @@ const Layout = ({ children }) => {
             <Route path="/reservations/add" element={isAuthenticated || isAdminAuthenticated ? <AddReservation /> : <Navigate to="/signin" />} />
             <Route path="/confirm-reservation" element={isAuthenticated  || isAdminAuthenticated ? <ConfirmReservation /> : <Navigate to="/signin" />} />
             <Route path="/products" element={isAuthenticated ? <Products /> : <Navigate to="/signin" />} />
+            <Route path="/register" element={<Onboarding />} />
           </Routes>
         </Box>
       )}

@@ -102,6 +102,12 @@ const handleAdminSignIn = async () => {
       return passwordRegex.test(password);
   }
 
+  const linkStyle = {
+    color: 'red', // Or your preferred link color
+    textDecoration: 'underline', // Optional: underlined text
+    cursor: 'pointer', // Makes the cursor a pointer on hover
+  };
+
   return (
     <Container
       maxWidth={true}
@@ -211,7 +217,15 @@ const handleAdminSignIn = async () => {
         severity="error"
         message={errorMessage}
       />
+      <br/>
+      <Typography
+        variant="h6"
+        sx={{ cursor: "pointer",textAlign:"center" }}
+      >
+        Umthombo Marketplace:<Link to="/register" style={linkStyle}>Join the Beneficiary Program</Link>
+      </Typography>
     </Container>
+    
   );
 };
 

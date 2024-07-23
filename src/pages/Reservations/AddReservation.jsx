@@ -125,7 +125,16 @@ const AddReservation = ({ onBack }) => {
           edge="start"
           color="inherit"
           aria-label="back"
-          onClick={() => handleNavigateTo("/reservations")}
+          onClick={() => {
+            if(isAdminAuthenticated){
+              const id = JSON.parse(localStorage.getItem("shopifyId"));
+              handleNavigateTo(`/reservationsAdmin/${id}`)
+            }else{
+              handleNavigateTo(`/reservations`)
+            }
+              
+          }
+        }
         >
           <ArrowBackIcon />
         </IconButton>
@@ -238,6 +247,14 @@ const AddReservation = ({ onBack }) => {
           onClick={handlePlaceOrder}
         >
           Place order
+        </Button>
+        <Button
+          variant="contained"
+          color="success"
+          sx={{ minWidth: "200px" }}
+          onClick={handlePlaceOrder}
+        >
+          Mark as paid
         </Button>
       </Box>
       </Box>
