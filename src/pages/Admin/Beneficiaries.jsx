@@ -67,7 +67,7 @@ const Beneficiaries = () => {
       >
         <BeneficiariesHeader
           title="Beneficiaries"
-          onBack={() => window.history.back()}
+          // onBack={() => window.history.back()}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
         />

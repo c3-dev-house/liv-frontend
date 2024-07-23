@@ -1,17 +1,24 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "../../axiosConfig";
+import PendingApproval from "./PendingApproval";
+import { Alert,AlertTitle,CircularProgress } from '@mui/material';
+import '../Onboarding/Onboarding.css'
+
 
 const Onboarding = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    title: "",
     name: "",
     surname: "",
-    preferredName: "",
     idNumber: "",
     birthDate: "",
     gender: "",
     referredBy: "",
     mobileNumber: "",
-    homeAddress: "",
+    city:"",
+    streetAddress:"",
+    province: "",
     alternativeNumber: "",
     email: "",
     race: "",
@@ -20,232 +27,302 @@ const Onboarding = () => {
     criminalRecord: "",
     relatedToLIV: "",
   });
+  const [submitted, setSubmitted] = useState(false);
+  const [validationFail, setValidationFail] = useState(false);
+  const [validationMessage,setValidationMessage]=useState("");
+  const [loading, setLoading] = useState(false); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  
+    // Replace non-letter and non-number characters with a space, except for birthDate
+    const sanitizedValue = name === 'birthDate' || name ==='email' || name ==='mobileNumber' ? value : value.replace(/[^a-zA-Z0-9\s]/g, ' ');
+  
+    setFormData({ ...formData, [name]: sanitizedValue });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
+    setLoading(true); 
+    // Perform validations
+    if (!validateEmail(formData.email)) {
+      // alert("Please enter a valid email address.");
+      setValidationFail(true);
+      setValidationMessage("Please enter a valid email address.")
+      setLoading(false);
+      return;
+    }
+    
+    if (!validateRequiredFields(formData)) {
+      // alert("Please fill in all required fields.");
+      setValidationFail(true);
+      setValidationMessage(`Please fill all required fields * `)
+      setLoading(false);
+      return;
+    }
+
     console.log("Form Data Submitted:", formData);
-  };
+    try {
+      // Call the resetPassword API endpoint
+      const response = await axios.post('/api/register/addApplicant', {
+        formData
+      });
+      console.log('Applicant',response)
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Registration failed', error);
+    }finally{
+      setLoading(false);
+    }
+  }
 
-  const formGroupStyle = {
-    display: "flex",
-    flexDirection: "column",
-    marginBottom: "10px",
-  };
+  // Validate email address format
+  const validateEmail = (email) => {
+    const emailPattern = /\S+@\S+\.\S+/;
+    return emailPattern.test(email);
+  }
 
-  const labelStyle = {
-    marginBottom: "5px",
+  // Validate required fields
+  const validateRequiredFields = (data) => {
+    const requiredFields = [
+      "name", "surname", "idNumber", "birthDate", "gender", "mobileNumber", "city", "streetAddress", 
+      "province", "email", "race", "numberOfChildren", "disabilities", "criminalRecord", "relatedToLIV"
+    ];
+    return requiredFields.every(field => data[field].trim() !== "");
   };
+  // Utility function for rendering labels
+  const renderLabel = (label, isRequired) => (
+    <label className="labelStyle">
+       {isRequired && <span className="requiredLabel">*</span>} {label}
+    </label>
+  );
 
-  const inputStyle = {
-    padding: "8px",
-    fontSize: "16px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-  };
-
-  const formContainerStyle = {
-    display: "flex",
-    flexDirection: "column",
-    maxWidth: "600px",
-    margin: "0 auto",
-  };
-
-  const sectionTitleStyle = {
-    marginTop: "20px",
-    marginBottom: "10px",
-  };
+  const provinces = [
+    'KwaZulu-Natal',
+    'Mpumalanga',
+    'Gauteng',
+    'North West',
+    'Eastern Cape',
+    'Northern Cape',
+    'Western Cape'
+  ];
 
   return (
-    <form onSubmit={handleSubmit} style={formContainerStyle}>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Title:</label>
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          style={inputStyle}
+    <div>
+      {!submitted ? (
+        <form onSubmit={handleSubmit} className="formContainer">
+          <div className='formGroup'>
+            {renderLabel("Name", true)}
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Surname", true)}
+            <input
+              type="text"
+              name="surname"
+              value={formData.surname}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("ID Number", true)}
+            <input
+              type="text"
+              name="idNumber"
+              value={formData.idNumber}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Birth Date", true)}
+            <input
+              type="date"
+              name="birthDate"
+              value={formData.birthDate}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Gender", true)}
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              className="inputStyle"
+            >
+              <option value="">Select</option>
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+            </select>
+          </div>
+          <div className='formGroup'>
+            {renderLabel("How did you find out about the programme?", false)}
+            <input
+              type="text"
+              name="referredBy"
+              value={formData.referredBy}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Mobile Number", true)}
+            <input
+              type="text"
+              name="mobileNumber"
+              value={formData.mobileNumber}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Province", true)}
+            <select
+              name="province"
+              value={formData.province}
+              onChange={handleChange}
+              className="inputStyle"
+            >
+              <option value="">Select a province</option>
+              {provinces.map((province, index) => (
+                <option key={index} value={province}>
+                  {province}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className='formGroup'>
+            {renderLabel("City", true)}
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Street Address", true)}
+            <input
+              type="text"
+              name="streetAddress"
+              value={formData.streetAddress}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Alternative Number", false)}
+            <input
+              type="text"
+              name="alternativeNumber"
+              value={formData.alternativeNumber}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Email", true)}
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Race", true)}
+            <select
+              name="race"
+              value={formData.race}
+              onChange={handleChange}
+              className="inputStyle"
+            >
+              <option value="">Select</option>
+              <option value="Black">Black</option>
+              <option value="Coloured">Coloured</option>
+              <option value="White">White</option>
+              <option value="Indian/Asian">Indian/Asian</option>
+            </select>
+          </div>
+          <div className='formGroup'>
+            {renderLabel("No. Of children (under 18)", true)}
+            <input
+              type="number"
+              name="numberOfChildren"
+              value={formData.numberOfChildren}
+              onChange={handleChange}
+              className="inputStyle"
+            />
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Do you have any disabilities?", true)}
+            <select
+              name="disabilities"
+              value={formData.disabilities}
+              onChange={handleChange}
+              className="inputStyle"
+            >
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Do You Have a Criminal Record?", true)}
+            <select
+              name="criminalRecord"
+              value={formData.criminalRecord}
+              onChange={handleChange}
+              className="inputStyle"
+            >
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div className='formGroup'>
+            {renderLabel("Are You Related to Anyone employed at LIV?", true)}
+            <select
+              name="relatedToLIV"
+              value={formData.relatedToLIV}
+              onChange={handleChange}
+              className="inputStyle"
+            >
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          {validationFail && (
+            <div style={{ marginBottom: "10px" }}>
+              <Alert severity="warning">
+                <AlertTitle>Incorrect Field</AlertTitle>
+                {validationMessage}
+              </Alert>
+            </div>
+          )}
+          <button type="submit" className="inputStyle">
+            {loading ? (<CircularProgress size={24}/>  ) : ("Submit")}
+          </button>
+        </form>
+      ) : (
+        <PendingApproval
+          name={formData.name}
+          surname={formData.surname}
         />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Name:</label>
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Surname:</label>
-        <input
-          type="text"
-          name="surname"
-          value={formData.surname}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Preferred Name:</label>
-        <input
-          type="text"
-          name="preferredName"
-          value={formData.preferredName}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>ID Number:</label>
-        <input
-          type="text"
-          name="idNumber"
-          value={formData.idNumber}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Birth Date:</label>
-        <input
-          type="date"
-          name="birthDate"
-          value={formData.birthDate}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Gender:</label>
-        <input
-          type="text"
-          name="gender"
-          value={formData.gender}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>
-          Referred by (How did you find out about the programme):
-        </label>
-        <input
-          type="text"
-          name="referredBy"
-          value={formData.referredBy}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <h3 style={sectionTitleStyle}>CONTACT DETAILS</h3>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Mobile Number:</label>
-        <input
-          type="text"
-          name="mobileNumber"
-          value={formData.mobileNumber}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Home Address:</label>
-        <input
-          type="text"
-          name="homeAddress"
-          value={formData.homeAddress}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Alternative Number:</label>
-        <input
-          type="text"
-          name="alternativeNumber"
-          value={formData.alternativeNumber}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Email:</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Race:</label>
-        <select
-          name="race"
-          value={formData.race}
-          onChange={handleChange}
-          style={inputStyle}
-        >
-          <option value="">Select</option>
-          <option value="Black">Black</option>
-          <option value="Coloured">Coloured</option>
-          <option value="White">White</option>
-          <option value="Indian/Asian">Indian/Asian</option>
-        </select>
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>No. Of children (under 18):</label>
-        <input
-          type="number"
-          name="numberOfChildren"
-          value={formData.numberOfChildren}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Do you have any disabilities?</label>
-        <input
-          type="text"
-          name="disabilities"
-          value={formData.disabilities}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>Do You Have a Criminal Record?</label>
-        <input
-          type="text"
-          name="criminalRecord"
-          value={formData.criminalRecord}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <div style={formGroupStyle}>
-        <label style={labelStyle}>
-          Are You Related to Anyone employed at LIV?
-        </label>
-        <input
-          type="text"
-          name="relatedToLIV"
-          value={formData.relatedToLIV}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-      </div>
-      <button type="submit" style={inputStyle}>
-        Submit
-      </button>
-    </form>
+      )}
+    </div>
   );
 };
 

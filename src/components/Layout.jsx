@@ -158,9 +158,6 @@ const Layout = ({ children }) => {
               <MenuItem onClick={() => handleNavigateTo("/products")}>
                 Products
               </MenuItem>
-              <MenuItem onClick={() => handleNavigateTo("/register")}>
-                Register
-              </MenuItem>
               <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
             </Menu>
           )}
@@ -228,7 +225,13 @@ const Layout = ({ children }) => {
           }}
         >
           <Routes>
-            <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/signin" />} />
+            <Route path="/" element={isAuthenticated ? (<Home />) : isAdminAuthenticated ? (
+              <Beneficiaries />
+            ) : (
+              <Navigate to="/signin" />
+            )
+          }
+        />
             <Route path="/allBeneficiaries" element={ <Beneficiaries />} />
             <Route path="/signin" element={<SignIn />} />
             <Route
