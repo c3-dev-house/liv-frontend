@@ -211,11 +211,11 @@ const Products = () => {
       {loading ? (
         <>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-            <CircularProgress />
+            {/* <CircularProgress /> */}
           </Box>
-          {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 4,ml:'60px'}}>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4,ml:'60px'}}>
             <Spinner />
-          </Box> */}
+          </Box>
         </>
       ) : filteredProducts.length === 0 ? (
         <Typography variant="h6" sx={{ mt: 2 }}>No products to display at this stage.</Typography>

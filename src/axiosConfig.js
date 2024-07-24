@@ -5,6 +5,7 @@ const axiosInstance = axios.create({
   //backend link for local: ...//localhost:3000/ 
   //old uat: //'http://liv-village-backend-env.eba-2jjmrubm.eu-west-3.elasticbeanstalk.com/'
   //new uat: https://liv.c3-dev-house.com/
+
 });
 
 axiosInstance.interceptors.response.use(
