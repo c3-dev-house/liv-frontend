@@ -12,14 +12,16 @@
     animation: spin 1.5s linear infinite;
   }
   
-  .orange { background-color: rgb(251, 188, 70); }
-  .yellow { background-color: rgb(250, 220, 45); }
-  .lime { background-color: rgb(157, 199, 105); }
-  .green { background-color: rgb(75, 165, 113); }
-  .blue { background-color: rgb(16, 119, 156); }
-  .lightblue { background-color: rgb(1, 188, 188); }
-  .purple { background-color: rgb(147, 85, 147); }
-  .red { background-color: rgb(216, 67, 67); }
+
+  .orange { background-color: #FF8003; }
+  .yellow { background-color: #FBDB00; }
+  .lime { background-color: #80FE02; }
+  .green { background-color: #2BEE0A; }
+  .blue { background-color: #1663FF; }
+  .lightblue { background-color: #4EDBFF; }
+  .purple { background-color: #7E01FB; }
+  .red { background-color: #FE0207; }
+
   
   @keyframes spin {
     0% { transform: rotate(0deg) translateX(10px)  rotate(0deg); }
