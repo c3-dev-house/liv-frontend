@@ -5,32 +5,32 @@
   }
   
   .circle {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+    width:3px;
+    height: 3px;
+    border-radius: 60%;
     position: absolute;
-    animation: spin 1s linear infinite;
+    animation: spin 1.5s linear infinite;
   }
   
-  .orange { background-color: orange; }
-  .yellow { background-color: yellow; }
-  .lime { background-color: lime; }
-  .green { background-color: green; }
-  .blue { background-color: blue; }
-  .lightblue { background-color: lightblue; }
-  .purple { background-color: purple; }
-  .red { background-color: red; }
+  .orange { background-color: rgb(251, 188, 70); }
+  .yellow { background-color: rgb(250, 220, 45); }
+  .lime { background-color: rgb(157, 199, 105); }
+  .green { background-color: rgb(75, 165, 113); }
+  .blue { background-color: rgb(16, 119, 156); }
+  .lightblue { background-color: rgb(1, 188, 188); }
+  .purple { background-color: rgb(147, 85, 147); }
+  .red { background-color: rgb(216, 67, 67); }
   
   @keyframes spin {
-    0% { transform: rotate(0deg) translateX(40px)  rotate(0deg); }
-    100% { transform: rotate(360deg) translateX(40px)  rotate(-360deg); }
+    0% { transform: rotate(0deg) translateX(10px)  rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(10px)  rotate(-360deg); }
   }
   
   .spinner .circle:nth-child(1) { animation-delay: 0s; }
-  .spinner .circle:nth-child(2) { animation-delay: -0.125s; }
-  .spinner .circle:nth-child(3) { animation-delay: -0.25s; }
-  .spinner .circle:nth-child(4) { animation-delay: -0.375s; }
-  .spinner .circle:nth-child(5) { animation-delay: -0.5s; }
-  .spinner .circle:nth-child(6) { animation-delay: -0.625s; }
-  .spinner .circle:nth-child(7) { animation-delay: -0.75s; }
-  .spinner .circle:nth-child(8) { animation-delay: -0.875s; }
+  .spinner .circle:nth-child(2) { animation-delay: -0.19s; }
+  .spinner .circle:nth-child(3) { animation-delay: -0.38s; }
+  .spinner .circle:nth-child(4) { animation-delay: -0.56s; }
+  .spinner .circle:nth-child(5) { animation-delay: -0.75s; }
+  .spinner .circle:nth-child(6) { animation-delay: -0.94s; }
+  .spinner .circle:nth-child(7) { animation-delay: -1.13s; }
+  .spinner .circle:nth-child(8) { animation-delay: -1.32s; }

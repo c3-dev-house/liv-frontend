@@ -1,6 +1,7 @@
 // src/pages/SignIn.jsx
 import React, { useState } from "react";
-import { Box, TextField, Button, Typography, Link, Container, Grid, CircularProgress } from "@mui/material";
+import { Link } from "react-router-dom";
+import { Box, TextField, Button, Typography, Container, Grid, CircularProgress } from "@mui/material";
 import { InfoOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
