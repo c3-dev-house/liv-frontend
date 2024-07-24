@@ -208,7 +208,7 @@ const Products = () => {
         sortCriteria={sortCriteria}
         filterCriteria={filterCriteria}
       />
-      {!loading ? (
+      {loading ? (
         <>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
             {/* <CircularProgress /> */}

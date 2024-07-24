@@ -41,7 +41,6 @@ const ProductEditModal = ({ open, onClose, onSubmit, initialData, isAdd,setIsDel
       date: new Date().toISOString().split('T')[0], // Automatically set date
     };
     onSubmit(updatedData);
-    setExpanded(true);
     // console.log("Submit")
   };
 

@@ -37,7 +37,7 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
   const theme = useTheme();
 
   const handleExpand = () => {
-    // console.log('Clicked')
+    console.log('Clicked')
     setExpanded(!expanded);
   };
 
@@ -55,9 +55,10 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
   const handleSubmitModal = (updatedItem) => {
     if (isAdd) {
       onAddItem(product, updatedItem);
+      console.log('product',product)
     } else {
       onEditItem(editItem.Id, updatedItem);
-      // console.log("Edit Item, ", editItem);
+      console.log("Edit Item, ", editItem);
     }
     handleCloseModal();
   };
