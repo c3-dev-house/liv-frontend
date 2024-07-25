@@ -1,9 +1,23 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://liv.c3-dev-house.com/', //backend link for local: ...//localhost:3000/ uat: //'http://liv-village-backend-env.eba-2jjmrubm.eu-west-3.elasticbeanstalk.com/'
-  //https://liv.c3-dev-house.com/
-  //https://liv.c3-dev-house.com/
+  baseURL: 'https://liv.c3-dev-house.com/', 
+  //backend link for local: ...//localhost:3000/ 
+  //old uat: //'http://liv-village-backend-env.eba-2jjmrubm.eu-west-3.elasticbeanstalk.com/'
+  //new uat: https://liv.c3-dev-house.com/
+
 });
+
+axiosInstance.interceptors.response.use(
+  (response) => response, // Return response if successful
+  (error) => {
+    if (error.response && error.response.status === 500 || error.response && error.response.status === 401) {
+      // Trigger a global event for handling 401 errors
+      const event = new CustomEvent('authError', { detail: error });
+      window.dispatchEvent(event);
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;

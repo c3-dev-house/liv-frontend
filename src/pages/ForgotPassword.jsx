@@ -8,6 +8,7 @@ import CustomAlert from "../components/CustomAlert";
 
 const ForgotPassword = () => {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); 
@@ -26,6 +27,7 @@ const ForgotPassword = () => {
         // Call the forgotPassword API endpoint
         const response = await axios.post('/api/auth/forgot-password', {
           username,
+          email,
           newPassword,
         });
 
@@ -91,6 +93,15 @@ const ForgotPassword = () => {
           margin="normal"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          sx={{ width: "100%" }}
+        />
+        <TextField
+          label="Email"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           sx={{ width: "100%" }}
         />
         <TextField

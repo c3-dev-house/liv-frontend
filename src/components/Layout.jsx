@@ -56,6 +56,17 @@ const Layout = ({ children }) => {
     //checkAuth()
   }, []);
   
+  useEffect(() => {
+    // Listen for the custom event triggered by Axios interceptor
+    const handleAuthError = (event) => {
+      navigate('/signin');
+    };
+    window.addEventListener('authError', handleAuthError);
+    // Cleanup event listener on unmount
+    return () => {
+      window.removeEventListener('authError', handleAuthError);
+    };
+  }, [navigate]);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
