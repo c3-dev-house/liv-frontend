@@ -23,54 +23,68 @@ const AddReservation = ({ onBack }) => {
   const navigate = useNavigate();
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [location, setLocation] = useState("KZN");
-  const[category,setCategory] = useState("All");
+  const [category, setCategory] = useState("All");
   const [products, setProducts] = useState([]);
-  //const [customerId, setCustomerId] = useState("");
-  const { currentUser,isAdminAuthenticated } = useAuth();
+  const { currentUser, isAdminAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [markPaidLoading, setMarkPaidLoading] = useState(false);
+  const [reservation, setReservation] = useState(null);
+  const [remainingQuantity, setRemainingQuantity] = useState(0);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const vendor = encodeURIComponent(location);
+      const productType = encodeURIComponent(category);
+      let response;
+      if (category === "All") {
+        response = await axios.get(`/api/products/vendor-products?vendor=${vendor}`);
+      } else {
+        response = await axios.get(`/api/products/vendor-products/category?vendor=${vendor}&product_type=${productType}`);
+      }
+      const activeProducts = response.data
+        .filter(product => product.status === 'active')
+        .map(product => ({
+          id: product.id,
+          title: product.title,
+          bodyHtml: product.bodyHtml,
+          createdAt: product.createdAt,
+          price: product.variants[0].price,
+          variantId: product.variants[0].id,
+          location: product.vendor,
+        }));
+      setProducts(activeProducts);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setErrorMessage("Server error. Contact administrator.");
+      setAlertOpen(true);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const vendor = encodeURIComponent(location);
-        const productType = encodeURIComponent(category);
-        let response;
-        if(category === "All"){
-          response = await axios.get(`/api/products/vendor-products?vendor=${vendor}`);
-        }else{
-          response = await axios.get(`/api/products/vendor-products/category?vendor=${vendor}&product_type=${productType}`);
-        }
-        
-        // console.log('Fetched products:', response.data);
-
-        const activeProducts = response.data
-          .filter(product => product.status === 'active')
-          .map(product => ({
-            id: product.id,
-            title: product.title,
-            bodyHtml: product.bodyHtml,
-            createdAt: product.createdAt,
-            price: product.variants[0].price,
-            variantId: product.variants[0].id,
-            location: product.vendor,
-          }));
-          // console.log("activeProducts");
-          // console.log(activeProducts);
-        setProducts(activeProducts);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        setErrorMessage("Server error. Contact administrator.");
-        setAlertOpen(true);
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
-  }, [location,category]);
+  }, [location, category]);
+
+
+    // const fetchReservation = async (customerId) => {
+    //   try {
+    //     const response = await axios.get(`/api/orders/${customerId}`);
+    //     // console.log("response.data");
+    //     console.log('order data',response.data.order);
+    //     setReservation(response.data.order);
+    //   } catch (error) {
+    //     console.error("Error fetching reservation:", error);
+    //     setErrorMessage("Server error. Contact administrator.");
+    //     setAlertOpen(true);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
 
   const handleNavigateTo = (path) => {
     navigate(path);
@@ -79,10 +93,11 @@ const AddReservation = ({ onBack }) => {
   const handleLocationChange = (event) => {
     setLocation(event.target.value);
   };
-  
+
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
   };
+
   const handleSelectProduct = (productId) => {
     setSelectedProducts((prevSelected) =>
       prevSelected.includes(productId)
@@ -102,7 +117,7 @@ const AddReservation = ({ onBack }) => {
     if (!customerId) {
       setErrorMessage("Customer ID not found. Please contact the administrator.");
       setAlertOpen(true);
-      return;
+      return null;
     }
 
     const reservation = {
@@ -115,7 +130,83 @@ const AddReservation = ({ onBack }) => {
           quantity: 1,
         })),
     };
-    navigate("/confirm-reservation", { state: { reservation,isAdminAuthenticated } });
+    if (!isAdminAuthenticated) {
+      navigate("/confirm-reservation", { state: { reservation, isAdminAuthenticated } });
+    }
+    return reservation;
+  };
+
+  const handleReserve = async (reservation) => {
+    const { customerId, contents } = reservation;
+    const variantIds = contents.map((product) => product.variantId);
+    const productIds = contents.map((product) => product.id);
+
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/orders/create", { //Change back
+        customerId,
+        variantIds,
+        productIds,
+      });
+      console.log('response.data.order', response.data.order)
+      setReservation(response.data.order);
+      setLoading(false);
+      if (isAdminAuthenticated) {
+        navigate(`/reservationsAdmin/${customerId}`);
+      } else {
+        navigate("/reservations");
+      }
+      return response.data.order;
+    } catch (error) {
+      console.error("Error creating order", error);
+      if (error.response && error.response.data) {
+        setErrorMessage(error.response.data.error);
+        setRemainingQuantity(error.response.data.remainingQuantity);
+        setLoading(false);
+      } else {
+        setErrorMessage("An unexpected error occurred.");
+      }
+      setLoading(false);
+      setAlertOpen(true);
+    }
+  };
+
+  const handleMarkAsPaid = async (reservation) => {
+    setPaymentModalOpen(false);
+    setMarkPaidLoading(true);
+    try {
+      const productIds = reservation.line_items.map((product) => product.product_id);
+      console.log('productIds',productIds);
+      console.log('orderId',reservation)
+      await axios.post(`/api/orders/markAsPaid`, {
+        orderId: reservation.order_id,
+        productIds,
+      });
+      navigate(`/reservationsAdmin/${reservation.id}`);
+    } catch (error) {
+      console.error("Error canceling order:", error);
+      setErrorMessage("Server error. Contact administrator.");
+      setAlertOpen(true);
+    } finally {
+      setMarkPaidLoading(false);
+    }
+  };
+
+  const handleCompleteProcess = async () => {
+    try {
+      await fetchProducts();
+      const reservationData = handlePlaceOrder();
+      if (reservationData) {
+        const createdReservation = await handleReserve(reservationData);
+        if (createdReservation) {
+          handleMarkAsPaid(createdReservation);
+        }
+      }
+    } catch (error) {
+      console.error("Error in the complete process:", error);
+      setErrorMessage("An error occurred during the complete process. Please try again.");
+      setAlertOpen(true);
+    }
   };
 
   return (
@@ -126,15 +217,13 @@ const AddReservation = ({ onBack }) => {
           color="inherit"
           aria-label="back"
           onClick={() => {
-            if(isAdminAuthenticated){
+            if (isAdminAuthenticated) {
               const id = JSON.parse(localStorage.getItem("shopifyId"));
               handleNavigateTo(`/reservationsAdmin/${id}`)
-            }else{
+            } else {
               handleNavigateTo(`/reservations`)
             }
-              
-          }
-        }
+          }}
         >
           <ArrowBackIcon />
         </IconButton>
@@ -142,8 +231,8 @@ const AddReservation = ({ onBack }) => {
           Place new reservation
         </Typography>
       </Toolbar>
-      <Box sx={{ padding: "20px" }}>
-        <FormControl fullWidth sx={{ mb: 3, gap:2 }} size="small">
+      <Box sx={{ margin: "20px" }}>
+        <FormControl fullWidth sx={{ mb: 3, gap: 2 }} size="small">
           <InputLabel id="location-label">Location</InputLabel>
           <Select
             labelId="location-label"
@@ -163,7 +252,7 @@ const AddReservation = ({ onBack }) => {
             <MenuItem value={"GAU"}>GAU</MenuItem>
           </Select>
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 3, gap:2 }} size="small">
+        <FormControl fullWidth sx={{ mb: 3, gap: 2 }} size="small">
           <InputLabel id="category-label">Category</InputLabel>
           <Select
             labelId="category-label"
@@ -177,39 +266,29 @@ const AddReservation = ({ onBack }) => {
             <MenuItem value={"Men's Clothing - Second Hand"}>Men's Clothing - Brand New</MenuItem>
             <MenuItem value={"Men's Clothing - Second Hand"}>Men's Clothing - Second Hand</MenuItem>
             <MenuItem value={"Men's Clothing - Mix (New + Used)"}>Men's Clothing - Mix (New + Used)</MenuItem>
-
             <MenuItem value={"Women's Clothing - Brand New"}>Women's Clothing - Brand New</MenuItem>
             <MenuItem value={"Women's Clothing - Second Hand"}>Women's Clothing - Second Hand</MenuItem>
             <MenuItem value={"Women's Clothing - Mix (New + Used)"}>Women's Clothing - Mix (New + Used)</MenuItem>
-
             <MenuItem value={"Male Teens Clothing - Brand New"}>Male Teens Clothing - Brand New</MenuItem>
             <MenuItem value={"Male Teens Clothing - Second Hand"}>Male Teens Clothing - Second Hand</MenuItem>
             <MenuItem value={"Male Teens Clothing - Mix (New + Used)"}>Male Teens Clothing - Mix (New + Used)</MenuItem>
-
             <MenuItem value={"Female Teens Clothing - Brand New"}>Female Teens Clothing - Brand New</MenuItem>
             <MenuItem value={"Female Teens Clothing - Second Hand"}>Female Teens Clothing - Second Hand</MenuItem>
             <MenuItem value={"Female Teens Clothing - Mix (New + Used)"}>Female Teens Clothing - Mix (New + Used)</MenuItem>
-
             <MenuItem value={"Boys: Kids/Preteens Clothing - Brand New"}>Boys: Kids/Preteens Clothing - Brand New</MenuItem>
             <MenuItem value={"Boys: Kids/Preteens Clothing - Second Hand"}>Boys: Kids/Preteens Clothing - Second Hand</MenuItem>
             <MenuItem value={"Boys: Kids/Preteens Clothing - Mix (New + Used)"}>Boys: Kids/Preteens Clothing - Mix (New + Used)</MenuItem>
-
             <MenuItem value={"Girls: Kids/Preteens Clothing - Brand New"}>Girls: Kids/Preteens Clothing - Brand New</MenuItem>
             <MenuItem value={"Girls: Kids/Preteens Clothing - Second Hand"}>Girls: Kids/Preteens Clothing - Second Hand</MenuItem>
             <MenuItem value={"Girls: Kids/Preteens Clothing - Mix (New + Used)"}>Girls: Kids/Preteens Clothing - Mix (New + Used)</MenuItem>
-
             <MenuItem value={"Infant/Toddler Clothing - Brand New"}>Infant/Toddler Clothing - Brand New</MenuItem>
             <MenuItem value={"Infant/Toddler Clothing - Second Hand"}>Infant/Toddler Clothing - Second Hand</MenuItem>
             <MenuItem value={"Infant/Toddler Clothing - Mix (New + Used)"}>Infant/Toddler Clothing - Mix (New + Used)</MenuItem>
-
             <MenuItem value={"Mixed Bundle - Brand New"}>Mixed Bundle - Brand New</MenuItem>
             <MenuItem value={"Mixed Bundle - Second Hand"}>Mixed Bundle - Second Hand</MenuItem>
             <MenuItem value={"Mixed Bundle - Mix (New + Used)"}>Mixed Bundle - Mix (New + Used)</MenuItem>
-
-
           </Select>
         </FormControl>
-        
         <Typography variant="h6" sx={{ mb: 2 }}>
           Select bundles for reservation
         </Typography>
@@ -224,9 +303,7 @@ const AddReservation = ({ onBack }) => {
                 No products currently available. Please try again later.
               </Typography>
             ) : (
-              <Box
-                sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
-              >
+              <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
                 {products.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -239,24 +316,26 @@ const AddReservation = ({ onBack }) => {
             )}
           </>
         )}
-        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ minWidth: "200px" }}
-          onClick={handlePlaceOrder}
-        >
-          Place order
-        </Button>
-        <Button
-          variant="contained"
-          color="success"
-          sx={{ minWidth: "200px" }}
-          onClick={handlePlaceOrder}
-        >
-          Mark as paid
-        </Button>
-      </Box>
+        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2, flexDirection: "column", gap: 1 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ minWidth: "200px" }}
+            onClick={handlePlaceOrder}
+          >
+            Place order
+          </Button>
+          {isAdminAuthenticated && (
+            <Button
+              variant="contained"
+              color="success"
+              sx={{ minWidth: "200px" }}
+              onClick={handleCompleteProcess}
+            >
+              Mark as paid
+            </Button>
+          )}
+        </Box>
       </Box>
       <CustomAlert
         alertOpen={alertOpen}

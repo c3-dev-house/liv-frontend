@@ -72,7 +72,7 @@ const Profile = () => {
         onChange={handleChange}
         variant="outlined"
         fullWidth
-        disabled={!isEditing}
+        disabled
       />
       <Typography variant="h6" gutterBottom>
         About me
