@@ -18,6 +18,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ProductCard from "../../components/reservations/ProductCard";
 import { useAuth } from "../../context/AuthContext";
 import CustomAlert from "../../components/CustomAlert";
+import ConfirmationModal from "../../components/ConfirmationModal";
+import Spinner from "../../components/Spinner";
 
 const AddReservation = ({ onBack }) => {
   const navigate = useNavigate();
@@ -151,11 +153,11 @@ const AddReservation = ({ onBack }) => {
       console.log('response.data.order', response.data.order)
       setReservation(response.data.order);
       setLoading(false);
-      if (isAdminAuthenticated) {
-        navigate(`/reservationsAdmin/${customerId}`);
-      } else {
-        navigate("/reservations");
-      }
+      // if (isAdminAuthenticated) {
+      //   navigate(`/reservationsAdmin/${customerId}`);
+      // } else {
+      //   navigate("/reservations");
+      // }
       return response.data.order;
     } catch (error) {
       console.error("Error creating order", error);
@@ -193,21 +195,32 @@ const AddReservation = ({ onBack }) => {
   };
 
   const handleCompleteProcess = async () => {
-    try {
-      await fetchProducts();
-      const reservationData = handlePlaceOrder();
-      if (reservationData) {
-        const createdReservation = await handleReserve(reservationData);
-        if (createdReservation) {
-          handleMarkAsPaid(createdReservation);
-        }
+  try {
+    setPaymentModalOpen(true);
+  } catch (error) {
+    console.error("Error in the complete process:", error);
+    setErrorMessage("An error occurred during the complete process. Please try again.");
+    setAlertOpen(true);
+  }
+};
+
+const confirmPaymentProcess = async () => {
+  try {
+    const reservationData = handlePlaceOrder();
+    if (reservationData) {
+      const createdReservation = await handleReserve(reservationData);
+      if (createdReservation) {
+        await handleMarkAsPaid(createdReservation);
       }
-    } catch (error) {
-      console.error("Error in the complete process:", error);
-      setErrorMessage("An error occurred during the complete process. Please try again.");
-      setAlertOpen(true);
     }
-  };
+  } catch (error) {
+    console.error("Error confirming payment:", error);
+    setErrorMessage("An error occurred during payment confirmation. Please try again.");
+    setAlertOpen(true);
+  } finally {
+    setPaymentModalOpen(false);
+  }
+};
 
   return (
     <>
@@ -293,8 +306,17 @@ const AddReservation = ({ onBack }) => {
           Select bundles for reservation
         </Typography>
         {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "top", height: "100vh" }}>
-            <CircularProgress />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+              mt: 4,
+              ml: '80px'
+            }}
+          >
+            <Spinner />
           </Box>
         ) : (
           <>
@@ -321,7 +343,10 @@ const AddReservation = ({ onBack }) => {
             variant="contained"
             color="primary"
             sx={{ minWidth: "200px" }}
-            onClick={handlePlaceOrder}
+            onClick={() =>{
+               setPaymentModalOpen(true);
+               handlePlaceOrder();
+            }}
           >
             Place order
           </Button>
@@ -342,6 +367,14 @@ const AddReservation = ({ onBack }) => {
         setAlertOpen={setAlertOpen}
         severity="error"
         message={errorMessage}
+      />
+      <ConfirmationModal
+        open={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        onConfirm={confirmPaymentProcess}
+        loading={markPaidLoading}
+        title="Confirm Payment"
+        description="Are you sure you want to mark this order as paid?"
       />
     </>
   );

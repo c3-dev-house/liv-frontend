@@ -33,6 +33,7 @@ import Beneficiaries from "../pages/Admin/Beneficiaries.jsx";
 import ReservationsAdmin from "../pages/Reservations/ReservationsAdmin.jsx";
 import BrandLineComponent from "./BrandLineComponent";
 import Onboarding from "../pages/Onboarding/Onboarding.jsx";
+import Spinner from "./Spinner.jsx";
 
 const Layout = ({ children }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -197,17 +198,15 @@ const Layout = ({ children }) => {
       {loading ? ( ///LOADER
         <Box
           sx={{
-            height: "100vh",
-            width: "100%",
             display: "flex",
-            backgroundColor: "rgba(255, 255, 255, 0)", 
-            zIndex: 9999, 
-            marginTop: "80px",
             justifyContent: "center",
-            alignItems: "top",
+            alignItems: "center",
+            height: "100vh",
+            mt: 4,
+            ml: '80px'
           }}
         >
-          <CircularProgress />
+          <Spinner />
         </Box>
       ) : (
         <Box

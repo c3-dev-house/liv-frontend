@@ -16,6 +16,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import axios from "../../axiosConfig";
 import { useAuth } from "../../context/AuthContext";
 import CustomAlert from "../../components/CustomAlert";
+import Spinner from "../../components/Spinner";
 
 const Beneficiaries = () => {
   const navigate = useNavigate();
@@ -76,12 +77,13 @@ const Beneficiaries = () => {
             sx={{
               display: "flex",
               justifyContent: "center",
-              alignItems: "top",
+              alignItems: "center",
               height: "100vh",
-              paddingTop: 4
+              mt: 4,
+              ml: '80px'
             }}
           >
-            <CircularProgress />
+            <Spinner />
           </Box>
         ) : (
           <>

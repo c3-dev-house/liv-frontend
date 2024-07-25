@@ -14,6 +14,7 @@ import AdminReservationsHeader from "../../components/reservations/AdminReservat
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import axios from "../../axiosConfig";
 import CustomAlert from "../../components/CustomAlert";
+import Spinner from "../../components/Spinner";
 
 const ReservationsAdmin = () => {
   const navigate = useNavigate();
@@ -72,12 +73,13 @@ const ReservationsAdmin = () => {
             sx={{
               display: "flex",
               justifyContent: "center",
-              alignItems: "top",
+              alignItems: "center",
               height: "100vh",
-              paddingTop: 4,
+              mt: 4,
+              ml: '80px'
             }}
           >
-            <CircularProgress />
+            <Spinner />
           </Box>
         ) : (
           <>

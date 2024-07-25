@@ -11,10 +11,8 @@ const Spinner = () => {
         display: "flex",
         backgroundColor: "rgba(255, 255, 255, 0)", 
         zIndex: 9999, 
-        marginTop: "80px",
         justifyContent: "center",
         alignItems: "top",
-        position: 'relative',
       }}
     >
       <div className="spinner">

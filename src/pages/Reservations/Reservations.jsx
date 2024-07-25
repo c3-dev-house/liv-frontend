@@ -15,6 +15,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import axios from "../../axiosConfig";
 import { useAuth } from "../../context/AuthContext";
 import CustomAlert from "../../components/CustomAlert";
+import Spinner from "../../components/Spinner";
 
 const Reservations = () => {
   const navigate = useNavigate();
@@ -65,8 +66,17 @@ const Reservations = () => {
         onAdd={() => handleNavigateTo("/reservations/add")}
       />
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <CircularProgress />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            mt: 4,
+            ml: '75px'
+          }}
+        >
+          <Spinner />
         </Box>
       ) : (
         <>

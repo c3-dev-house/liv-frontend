@@ -119,6 +119,7 @@ const handleAdminSignIn = async () => {
         justifyContent: "start",
         height: "100vh",
         width: "100%",
+        maxWidth:"400px",
         p: 3,
       }}
     >
@@ -140,7 +141,7 @@ const handleAdminSignIn = async () => {
               //minWidth: "100%"
             }}
           >
-            <div style={{ width: "100%" }}>
+            <div style={{ width: "100%",maxWidth:'400px' }}>
               <div style={{display:"flex", flexDirection:"row", alignItems:"center", columnGap:"5px"}}>
                 <TextField
                   label="Username"
@@ -158,7 +159,7 @@ const handleAdminSignIn = async () => {
                 <div style={{ fontStyle: "italic", fontSize:"x-small", color: "gray"}}>Minimum 3 characters</div>
               )}
             </div>
-            <div style={{ width: "100%" }}>
+            <div style={{ width: "100%",maxWidth:'400px'}}>
               <div style={{display:"flex", flexDirection:"row", alignItems:"center",columnGap:"5px"}}>
                 <TextField
                   label="Password"
@@ -194,7 +195,7 @@ const handleAdminSignIn = async () => {
             <Button
               variant="contained"
               color="primary"
-              sx={{ mt: 2, width: "100%" }}
+              sx={{ mt: 2, width: "100%",maxWidth:'400px'}}
               onClick={handleSignIn}
               disabled={loading}
             >
@@ -203,7 +204,7 @@ const handleAdminSignIn = async () => {
             <Button
               variant="contained"
               color="info"
-              sx={{ mt: 2, width: "100%" }}
+              sx={{ mt: 2, width: "100%",maxWidth:'400px' }}
               onClick={handleAdminSignIn}
               disabled={loading}
             >
@@ -219,12 +220,23 @@ const handleAdminSignIn = async () => {
         message={errorMessage}
       />
       <br/>
-      <Typography
-        variant="h6"
-        sx={{ cursor: "pointer",textAlign:"center" }}
-      >
-        Umthombo Marketplace:<Link to="/register" style={linkStyle}>Join the Beneficiary Program</Link>
-      </Typography>
+      <div style={{display:'flex',flexDirection:'column', alignItems:'center'}}>
+        <Button
+          sx={{
+            mx: 8,
+            maxWidth: '400px',
+            bgcolor: '#9C5DFF', // Custom background color
+            color: '#FFFFFF',   // Custom text color
+            '&:hover': {
+              bgcolor: '#7F00FF', // Custom hover background color
+            },
+          }}
+          onClick={() => navigate('/register')} 
+        >
+          Apply Now
+        </Button>
+          {/* <Link to="/register" style={linkStyle}>Apply Now</Link> */}
+      </div>
     </Container>
     
   );
