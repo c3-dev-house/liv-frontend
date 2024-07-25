@@ -312,7 +312,7 @@ const Onboarding = () => {
               </Alert>
             </div>
           )}
-          <button type="submit" className="inputStyle">
+          <button type="submit" className="inputStyle" style={{color:'black'}}>
             {loading ? (<CircularProgress size={24}/>  ) : ("Submit")}
           </button>
         </form>

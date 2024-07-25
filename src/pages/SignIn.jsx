@@ -1,7 +1,6 @@
 // src/pages/SignIn.jsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Box, TextField, Button, Typography, Container, Grid, CircularProgress } from "@mui/material";
+import { Box, TextField, Button, Typography, Container, Grid, CircularProgress,Link } from "@mui/material";
 import { InfoOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
@@ -102,12 +101,6 @@ const handleAdminSignIn = async () => {
       const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
       return passwordRegex.test(password);
   }
-
-  const linkStyle = {
-    color: 'red', // Or your preferred link color
-    textDecoration: 'underline', // Optional: underlined text
-    cursor: 'pointer', // Makes the cursor a pointer on hover
-  };
 
   return (
     <Container
@@ -235,7 +228,6 @@ const handleAdminSignIn = async () => {
         >
           Apply Now
         </Button>
-          {/* <Link to="/register" style={linkStyle}>Apply Now</Link> */}
       </div>
     </Container>
     
