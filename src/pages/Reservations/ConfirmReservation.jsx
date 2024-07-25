@@ -38,7 +38,7 @@ const ConfirmReservation = () => {
         variantIds,
         productIds,
       });
-      // console.log("Order created successfully", response.data);
+      console.log("Order created successfully", response.data);
 
       // Navigate back to reservations page
       setLoading(false);

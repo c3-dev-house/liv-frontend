@@ -5,14 +5,13 @@
   }
   
   .circle {
-    width:3px;
-    height: 3px;
+    width:5px;
+    height: 5px;
     border-radius: 60%;
     position: absolute;
     animation: spin 1.5s linear infinite;
   }
   
-
   .orange { background-color: #FF8003; }
   .yellow { background-color: #FBDB00; }
   .lime { background-color: #80FE02; }
@@ -21,11 +20,10 @@
   .lightblue { background-color: #4EDBFF; }
   .purple { background-color: #7E01FB; }
   .red { background-color: #FE0207; }
-
   
   @keyframes spin {
-    0% { transform: rotate(0deg) translateX(10px)  rotate(0deg); }
-    100% { transform: rotate(360deg) translateX(10px)  rotate(-360deg); }
+    0% { transform: rotate(0deg) translateX(15px)  rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(15px)  rotate(-360deg); }
   }
   
   .spinner .circle:nth-child(1) { animation-delay: 0s; }

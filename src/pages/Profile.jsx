@@ -4,6 +4,7 @@ import ProfileHeader from '../components/profile/ProfileHeader'
 import axios from "../axiosConfig";
 import CustomAlert from '../components/CustomAlert';
 import { useAuth } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
 
 
 const Profile = () => {
@@ -72,7 +73,7 @@ const Profile = () => {
         onChange={handleChange}
         variant="outlined"
         fullWidth
-        disabled={!isEditing}
+        disabled
       />
       <Typography variant="h6" gutterBottom>
         About me
@@ -105,7 +106,19 @@ const Profile = () => {
           Save
         </Button>
       )}
-      {loading && <CircularProgress sx={{ mt: 2 }} />}
+      {loading && 
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            mt: 4,
+            ml: '75px'
+          }}
+        >
+          <Spinner />
+        </Box>}
       <CustomAlert
         alertOpen={alertOpen}
         setAlertOpen={setAlertOpen}
