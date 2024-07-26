@@ -17,12 +17,13 @@ import ProductEditModal from "../products/ProductEditModal";
 
 import { useTheme } from '@mui/material/styles';
 
-const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingBundleId}) => {
+const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingBundleId,setActiveProductCard,activeProductCard}) => {
   const [expanded, setExpanded] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [isAdd, setIsAdd] = useState(false);
   const [isDelete,setIsDelete]=useState(false);
+  
   
 
   useEffect(() => {
@@ -36,8 +37,20 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
 
   const theme = useTheme();
 
+  useEffect(() => {
+    if (activeProductCard && activeProductCard.id === product.id) {
+      setExpanded(true);
+    } else {
+      setExpanded(false);
+    }
+  }, [activeProductCard, product.id]);
+
   const handleExpand = () => {
-    console.log('Clicked')
+    if (expanded) {
+      setActiveProductCard(null);
+    } else {
+      setActiveProductCard(product);
+    }
     setExpanded(!expanded);
   };
 

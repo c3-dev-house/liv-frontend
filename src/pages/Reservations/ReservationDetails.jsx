@@ -5,7 +5,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "../../axiosConfig";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import CustomAlert from "../../components/CustomAlert";
-
+import Spinner from "../../components/Spinner";
 
 
 
@@ -53,7 +53,11 @@ const ReservationDetails = () => {
         orderId: reservation.id,
         productIds,
       });
-      navigate("/reservations"); 
+      if(isAdmin){
+        navigate(`/reservationsAdmin/${id}`); 
+      }else{
+        navigate("/reservations"); 
+      }
     } catch (error) {
       console.error("Error canceling order:", error);
       setErrorMessage("Server error. Contact administrator.");
@@ -85,8 +89,17 @@ const ReservationDetails = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-        <CircularProgress />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          mt: 4,
+          ml: '80px'
+        }}
+      >
+        <Spinner />
       </Box>
     );
   }
