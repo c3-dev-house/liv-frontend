@@ -23,6 +23,7 @@ const SignIn = () => {
   const [usernameInfo,setUsernameInfo]=useState(false);
   const [passwordInfo,setPasswordInfo]=useState(false);
   const [loading, setLoading] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false); 
   const [errorMessage, setErrorMessage] = useState(""); 
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ const SignIn = () => {
 const handleAdminSignIn = async () => {
   // Clear previous errors
   setError("");
-  setLoading(true);
+  setAdminLoading(true);
   // Validate inputs
   if (!validateUsername(username) || !validatePassword(password)) {
     setError("Invalid username or password");
@@ -83,7 +84,7 @@ const handleAdminSignIn = async () => {
     setErrorMessage("Error signing in. Please try again."); 
     setAlertOpen(true); 
   } finally {
-    setLoading(false);
+    setAdminLoading(false);
   }
 };
 
@@ -201,7 +202,23 @@ const handleAdminSignIn = async () => {
               onClick={handleAdminSignIn}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} /> : "Admin Sign in"} 
+              {adminLoading ? <CircularProgress size={24} /> : "Admin Sign in"} 
+            </Button>
+            <Button
+              sx={{
+                mt:2,
+                width:'100%',
+                boxShadow: 1,
+                maxWidth: '400px',
+                bgcolor: '#36BA98', // Custom background color
+                color: '#FFFFFF',   // Custom text color
+                '&:hover': {
+                  bgcolor: '#219C90', // Custom hover background color
+                },
+              }}
+              onClick={() => navigate('/register')} 
+            >
+              Apply Now
             </Button>
           </Box>
         </Grid>
@@ -212,23 +229,10 @@ const handleAdminSignIn = async () => {
         severity="error"
         message={errorMessage}
       />
-      <br/>
+      {/* <br/>
       <div style={{display:'flex',flexDirection:'column', alignItems:'center'}}>
-        <Button
-          sx={{
-            mx: 8,
-            maxWidth: '400px',
-            bgcolor: '#9C5DFF', // Custom background color
-            color: '#FFFFFF',   // Custom text color
-            '&:hover': {
-              bgcolor: '#7F00FF', // Custom hover background color
-            },
-          }}
-          onClick={() => navigate('/register')} 
-        >
-          Apply Now
-        </Button>
-      </div>
+        
+      </div> */}
     </Container>
     
   );

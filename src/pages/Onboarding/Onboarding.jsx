@@ -2,7 +2,7 @@ import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../axiosConfig";
 import PendingApproval from "./PendingApproval";
-import { Alert,AlertTitle,CircularProgress } from '@mui/material';
+import { Alert,AlertTitle,CircularProgress, Typography } from '@mui/material';
 import '../Onboarding/Onboarding.css'
 
 
@@ -36,14 +36,23 @@ const Onboarding = () => {
     const { name, value } = e.target;
   
     // Replace non-letter and non-number characters with a space, except for birthDate
-    const sanitizedValue = name === 'birthDate' || name ==='email' || name ==='mobileNumber' ? value : value.replace(/[^a-zA-Z0-9\s]/g, ' ');
+    const sanitizedValue = name === 'birthDate' || name === 'email'
+    ? value
+    : name === 'mobileNumber'
+      ? value.replace(/\D/g, '')
+      : value.replace(/[^a-zA-Z0-9\s]/g, ' ');
   
     setFormData({ ...formData, [name]: sanitizedValue });
   };
 
   const handleSubmit =async (e) => {
     e.preventDefault();
-    setLoading(true); 
+    setLoading(true);
+
+    const originalMobileNumber = formData.mobileNumber;
+    const codedMobileNumber = addZACode(formData.mobileNumber);
+    console.log(codedMobileNumber)
+
     // Perform validations
     if (!validateEmail(formData.email)) {
       // alert("Please enter a valid email address.");
@@ -61,6 +70,10 @@ const Onboarding = () => {
       return;
     }
 
+    if (codedMobileNumber) {
+      formData.mobileNumber = codedMobileNumber;
+    }
+
     console.log("Form Data Submitted:", formData);
     try {
       // Call the resetPassword API endpoint
@@ -70,6 +83,7 @@ const Onboarding = () => {
       console.log('Applicant',response)
       setSubmitted(true);
     } catch (error) {
+      formData.mobileNumber = originalMobileNumber;
       console.error('Registration failed', error);
     }finally{
       setLoading(false);
@@ -93,7 +107,7 @@ const Onboarding = () => {
   // Utility function for rendering labels
   const renderLabel = (label, isRequired) => (
     <label className="labelStyle">
-       {isRequired && <span className="requiredLabel">*</span>} {label}
+       {isRequired && <span className="requiredLabel">*</span>} {label} 
     </label>
   );
 
@@ -107,6 +121,18 @@ const Onboarding = () => {
     'Western Cape'
   ];
 
+  const addZACode = (mobileNumber) => {
+    let modifiedNumber;
+    const leadingNumber = mobileNumber.charAt(0);
+  
+    if (leadingNumber === '0') {
+      modifiedNumber = '+27' + mobileNumber.slice(1);
+    } else {
+      modifiedNumber = '+27'+mobileNumber;
+    }
+    return modifiedNumber;
+  }
+
   return (
     <div>
       {!submitted ? (
@@ -118,7 +144,7 @@ const Onboarding = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.name ? 'blackText' : ''}`}
             />
           </div>
           <div className='formGroup'>
@@ -128,7 +154,7 @@ const Onboarding = () => {
               name="surname"
               value={formData.surname}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.surname ? 'blackText' : ''}`}
             />
           </div>
           <div className='formGroup'>
@@ -138,7 +164,7 @@ const Onboarding = () => {
               name="idNumber"
               value={formData.idNumber}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.idNumber ? 'blackText' : ''}`}
             />
           </div>
           <div className='formGroup'>
@@ -148,7 +174,7 @@ const Onboarding = () => {
               name="birthDate"
               value={formData.birthDate}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.birthDate ? 'blackText' : ''}`}
             />
           </div>
           <div className='formGroup'>
@@ -157,7 +183,7 @@ const Onboarding = () => {
               name="gender"
               value={formData.gender}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.gender ? 'blackText' : ''}`}
             >
               <option value="">Select</option>
               <option value="Female">Female</option>
@@ -171,18 +197,21 @@ const Onboarding = () => {
               name="referredBy"
               value={formData.referredBy}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.referredBy ? 'blackText' : ''}`}
             />
           </div>
           <div className='formGroup'>
             {renderLabel("Mobile Number", true)}
-            <input
-              type="text"
-              name="mobileNumber"
-              value={formData.mobileNumber}
-              onChange={handleChange}
-              className="inputStyle"
-            />
+            <div className='inputWrapper'>
+              <span className='countryCode'>+27</span>
+              <input
+                type="text"
+                name="mobileNumber"
+                value={formData.mobileNumber}
+                onChange={handleChange}
+                className={`inputStyle ${formData.mobileNumber ? 'blackText' : ''}`}
+              />
+            </div>
           </div>
           <div className='formGroup'>
             {renderLabel("Province", true)}
@@ -190,9 +219,8 @@ const Onboarding = () => {
               name="province"
               value={formData.province}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.province ? 'blackText' : ''}`}
             >
-              <option value="">Select a province</option>
               {provinces.map((province, index) => (
                 <option key={index} value={province}>
                   {province}
@@ -207,7 +235,7 @@ const Onboarding = () => {
               name="city"
               value={formData.city}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.city ? 'blackText' : ''}`}
             />
           </div>
           <div className='formGroup'>
@@ -217,7 +245,7 @@ const Onboarding = () => {
               name="streetAddress"
               value={formData.streetAddress}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.streetAddress ? 'blackText' : ''}`}
             />
           </div>
           <div className='formGroup'>
@@ -227,7 +255,7 @@ const Onboarding = () => {
               name="alternativeNumber"
               value={formData.alternativeNumber}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.alternativeNumber ? 'blackText' : ''}`}
             />
           </div>
           <div className='formGroup'>
@@ -237,7 +265,7 @@ const Onboarding = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.email ? 'blackText' : ''}`}
             />
           </div>
           <div className='formGroup'>
@@ -246,7 +274,7 @@ const Onboarding = () => {
               name="race"
               value={formData.race}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.race ? 'blackText' : ''}`}
             >
               <option value="">Select</option>
               <option value="Black">Black</option>
@@ -262,7 +290,7 @@ const Onboarding = () => {
               name="numberOfChildren"
               value={formData.numberOfChildren}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.numberOfChildren ? 'blackText' : ''}`}
             />
           </div>
           <div className='formGroup'>
@@ -271,7 +299,7 @@ const Onboarding = () => {
               name="disabilities"
               value={formData.disabilities}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.disabilities ? 'blackText' : ''}`}
             >
               <option value="">Select</option>
               <option value="Yes">Yes</option>
@@ -284,7 +312,7 @@ const Onboarding = () => {
               name="criminalRecord"
               value={formData.criminalRecord}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.criminalRecord ? 'blackText' : ''}`}
             >
               <option value="">Select</option>
               <option value="Yes">Yes</option>
@@ -297,7 +325,7 @@ const Onboarding = () => {
               name="relatedToLIV"
               value={formData.relatedToLIV}
               onChange={handleChange}
-              className="inputStyle"
+              className={`inputStyle ${formData.relatedToLIV ? 'blackText' : ''}`}
             >
               <option value="">Select</option>
               <option value="Yes">Yes</option>

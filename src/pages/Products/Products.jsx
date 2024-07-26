@@ -24,10 +24,11 @@ const Products = () => {
   const [deletingLoading, setDeletingLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  
+  const [activeProductCard,setActiveProductCard]=useState({});
 
   useEffect(() => {
     const fetchBeneficiarySales = async () => {
+      console.log('activeProductCard',activeProductCard)
       setLoading(true);
       try {
         //const customerId = "7024877994031"; // hardcoded on Grace for now // Shopify_Id__c in user object
@@ -226,6 +227,8 @@ const Products = () => {
                 onEditItem={handleEditItem}
                 onDeleteItem={handleDeleteItem}
                 setClothingBundleId={setClothingBundleId}
+                activeProductCard={activeProductCard}
+                setActiveProductCard={setActiveProductCard}
               />
             </Grid>
           ))}

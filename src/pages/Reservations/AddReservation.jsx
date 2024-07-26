@@ -27,7 +27,7 @@ const AddReservation = ({ onBack }) => {
   const [location, setLocation] = useState("KZN");
   const [category, setCategory] = useState("All");
   const [products, setProducts] = useState([]);
-  const { currentUser, isAdminAuthenticated } = useAuth();
+  const { currentUser, isAdminAuthenticated,isAuthenticated} = useAuth();
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -339,6 +339,7 @@ const confirmPaymentProcess = async () => {
           </>
         )}
         <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2, flexDirection: "column", gap: 1 }}>
+        {isAuthenticated && (
           <Button
             variant="contained"
             color="primary"
@@ -350,16 +351,17 @@ const confirmPaymentProcess = async () => {
           >
             Place order
           </Button>
-          {isAdminAuthenticated && (
-            <Button
-              variant="contained"
-              color="success"
-              sx={{ minWidth: "200px" }}
-              onClick={handleCompleteProcess}
-            >
-              Mark as paid
-            </Button>
-          )}
+        )}
+        {isAdminAuthenticated && (
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ minWidth: "200px" }}
+            onClick={handleCompleteProcess}
+          >
+            Mark as paid
+          </Button>
+        )}
         </Box>
       </Box>
       <CustomAlert
