@@ -42,13 +42,14 @@ const Products = () => {
           id: product.id,
           title: product.title,
           price: product.price,
-          createdAt: product.items.createdAt, //undefined
+          createdAt: product.items[0].CreatedDate, //undefined?
           location: product.location,
           orderDate: product.date,
           orderTime: product.time,
           items: product.items,
+          bodyHtml: product.body_html
         }));
-        // console.log("soldProducts", soldProducts);
+         console.log("soldProducts", soldProducts);
         setProducts(soldProducts);
         setFilteredProducts(soldProducts);
       } catch (error) {

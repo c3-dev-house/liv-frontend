@@ -149,6 +149,7 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
               {product.orderDate} {product.orderTime}
             </Typography>
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>{product.title}</Typography>
+            <Typography variant="body2" sx={{  }}>{product.bodyHtml}</Typography>
             <Box
               sx={{
                 display: "flex",
