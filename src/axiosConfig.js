@@ -12,7 +12,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
   (response) => response, // Return response if successful
   (error) => {
-    if (error.response && error.response.status === 500 || error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 401) { // removed error.response && error.response.status === 500 ||
       // Trigger a global event for handling 401 errors
       const event = new CustomEvent('authError', { detail: error });
       window.dispatchEvent(event);

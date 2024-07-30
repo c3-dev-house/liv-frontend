@@ -20,8 +20,7 @@ const Products = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [addingLoading, setAddingLoading] = useState(false);
-  const [deletingLoading, setDeletingLoading] = useState(false);
+  const [updatingLoading, setUpdatingLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [activeProductCard,setActiveProductCard]=useState({});
@@ -137,7 +136,7 @@ const Products = () => {
   };
 
   const handleAddItem = async (product, newItem) => {
-    setAddingLoading(true);
+    setUpdatingLoading(true);
     try {
       const maxId = product.items.length ? Math.max(...product.items.map((item) => parseInt(item.id, 10))) : 0;
       const newId = maxId + 1;
@@ -154,11 +153,12 @@ const Products = () => {
       setErrorMessage("Error adding item. Please try again.");
       setAlertOpen(true);
     } finally {
-      setAddingLoading(false);
+      setUpdatingLoading(false);
     }
   };
 
   const handleEditItem = async (item, updatedItem) => {
+    setUpdatingLoading(true);
     try {
       await axios.patch(`/api/items/updateItem/${item}`, updatedItem);
       setFetchTrigger((prev) => !prev);
@@ -166,6 +166,8 @@ const Products = () => {
       console.error("Error editing item:", error);
       setErrorMessage("Error editing item. Please try again.");
       setAlertOpen(true);
+    } finally {
+      setUpdatingLoading(false);
     }
   };
 
@@ -176,7 +178,7 @@ const Products = () => {
   };
 
   const confirmDeleteItem = async () => {
-    setDeletingLoading(true);
+    setUpdatingLoading(true);
     setIsModalOpen(false);
     try {
       await axios.delete(`/api/items/deleteItem/${itemToDelete}`);
@@ -186,7 +188,7 @@ const Products = () => {
       setErrorMessage("Error deleting item. Please try again.");
       setAlertOpen(true);
     } finally {
-      setDeletingLoading(false);
+      setUpdatingLoading(false);
     }
   };
 
@@ -230,6 +232,7 @@ const Products = () => {
                 setClothingBundleId={setClothingBundleId}
                 activeProductCard={activeProductCard}
                 setActiveProductCard={setActiveProductCard}
+                updatingLoading={updatingLoading}
               />
             </Grid>
           ))}

@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "../../axiosConfig";
 import {
   Accordion,
@@ -12,19 +12,27 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import Spinner from "../Spinner";
 
 import ProductEditModal from "../products/ProductEditModal";
 
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from "@mui/material/styles";
 
-const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingBundleId,setActiveProductCard,activeProductCard}) => {
+const ProductCard = ({
+  product,
+  onAddItem,
+  onEditItem,
+  onDeleteItem,
+  setClothingBundleId,
+  setActiveProductCard,
+  activeProductCard,
+  updatingLoading,
+}) => {
   const [expanded, setExpanded] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [isAdd, setIsAdd] = useState(false);
-  const [isDelete,setIsDelete]=useState(false);
-  
-  
+  const [isDelete, setIsDelete] = useState(false);
 
   useEffect(() => {
     if (isDelete && editItem) {
@@ -68,7 +76,7 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
   const handleSubmitModal = (updatedItem) => {
     if (isAdd) {
       onAddItem(product, updatedItem);
-      console.log('product',product)
+      console.log("product", product);
     } else {
       onEditItem(editItem.Id, updatedItem);
       console.log("Edit Item, ", editItem);
@@ -79,13 +87,13 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
   const totalSalesPrice = (product.items || []).reduce(
     (acc, item) => acc + item.Sales_Price__c * item.Quantity__c,
     0
-);
+  );
 
-  const costPrice = product.price|| 0; // Assuming there's a fallback cost price if it's undefined
-  
+  const costPrice = product.price || 0; // Assuming there's a fallback cost price if it's undefined
+
   const profit = totalSalesPrice - costPrice;
   const profitDisplay =
-      profit >= 0 ? `R ${profit.toFixed(2)}` : `(${Math.abs(profit).toFixed(2)})`;
+    profit >= 0 ? `R ${profit.toFixed(2)}` : `(${Math.abs(profit).toFixed(2)})`;
 
   // console.log("Total Sales Price:", totalSalesPrice);
   // console.log("Profit:", profit);
@@ -94,41 +102,44 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
   function formatDate(originalDateTime) {
     // Parse the original date-time string
     const parsedDate = new Date(originalDateTime);
-  
+
     // Extract year, month, and day components
     const year = parsedDate.getFullYear();
-    const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-    const day = String(parsedDate.getDate()).padStart(2, '0');
-  
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+    const day = String(parsedDate.getDate()).padStart(2, "0");
+
     // Construct the formatted date string in yyyy-mm-dd format
     const formattedDate = `${year}-${month}-${day}`;
-  
+
     return formattedDate;
   }
 
   const findClothingBundleId = async (productId) => {
-    const userData = localStorage.getItem('user');
+    const userData = localStorage.getItem("user");
     let shopifyId;
     if (userData) {
-        const parsedUserData = JSON.parse(userData);
-        shopifyId = parsedUserData.Shopify_Id__c;
-        // console.log('Shopify ID:', shopifyId);
+      const parsedUserData = JSON.parse(userData);
+      shopifyId = parsedUserData.Shopify_Id__c;
+      // console.log('Shopify ID:', shopifyId);
     }
-    const clothingBundle = await axios.get(`/api/products/owned-products/${shopifyId}`);
+    const clothingBundle = await axios.get(
+      `/api/products/owned-products/${shopifyId}`
+    );
     // console.log('ClothingBundleId',clothingBundle);
     let clothingBundleData = clothingBundle.data;
 
-    const product = clothingBundleData.find(bundle => bundle.id === productId);
+    const product = clothingBundleData.find(
+      (bundle) => bundle.id === productId
+    );
     // console.log("Product",product);
     if (product) {
-      setClothingBundleId(product.clothingBundlesIds)
+      setClothingBundleId(product.clothingBundlesIds);
       return product.clothingBundlesIds;
     } else {
       throw new Error(`Product with ID ${productId} not found.`);
     }
   };
-  
-  
+
   return (
     <>
       <Accordion
@@ -148,8 +159,12 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
             <Typography variant="body2">
               {product.orderDate} {product.orderTime}
             </Typography>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>{product.title}</Typography>
-            <Typography variant="body2" sx={{  }}>{product.bodyHtml}</Typography>
+            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+              {product.title}
+            </Typography>
+            <Typography variant="body2" sx={{}}>
+              {product.bodyHtml}
+            </Typography>
             <Box
               sx={{
                 display: "flex",
@@ -164,7 +179,10 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
                 variant="body2"
                 sx={{
                   textAlign: "right",
-                  color: profit >= 0 ? theme.palette.green.main : theme.palette.error.main,
+                  color:
+                    profit >= 0
+                      ? theme.palette.green.main
+                      : theme.palette.error.main,
                 }}
               >
                 {profitDisplay}
@@ -201,60 +219,93 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
           </Box>
         </AccordionSummary>
         <AccordionDetails>
-          <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
-            <Typography variant="body1">Items sold</Typography>
-            {product.items.map((item) => (
-              <Box
-                key={item.Id}
+          {updatingLoading ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                mt: 4,
+                ml: "60px",
+                maxHeight: "120px",
+              }}
+            >
+              <Spinner />
+            </Box>
+          ) : (
+            <Box
+              sx={{ display: "flex", flexDirection: "column", width: "100%" }}
+            >
+              <Typography variant="body1">Items sold</Typography>
+              {product.items.map((item) => (
+                <Box
+                  key={item.Id}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    alignItems: "center",
+                    py: 0,
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      flex: "1 1 35%",
+                      textAlign: "left",
+                      fontSize: { xs: "0.55rem", sm: "0.55rem", lg: "0.65rem" },
+                    }}
+                  >
+                    {formatDate(item.CreatedDate)}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      flex: "1 1 40%",
+                      textAlign: "left",
+                      ml: 1,
+                      fontSize: { xs: "0.65rem", sm: "0.65rem", lg: "0.65rem" },
+                    }}
+                  >
+                    {item.Quantity__c} {item.Description__c}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      flex: "1 1 30%",
+                      textAlign: "right",
+                      ml: 1,
+                      fontSize: { xs: "0.65rem", sm: "0.65rem", lg: "0.65rem" },
+                    }}
+                  >
+                    R {item.Sales_Price__c}
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleOpenModal(item)}
+                    sx={{ ml: 0.5 }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </Box>
+              ))}
+              <Button
+                startIcon={<AddIcon />}
+                variant="contained"
+                color="primary"
                 sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                  alignItems: "center",
-                  py: 0,
+                  mt: 2,
+                  backgroundColor: theme.palette.green.main,
+                  color: "white",
+                }}
+                onClick={() => {
+                  handleOpenModal(null);
+                  findClothingBundleId(product.id);
                 }}
               >
-                <Typography
-                  variant="body2"
-                  sx={{ flex: "1 1 25%", textAlign: "left", fontSize: { xs: '0.65rem', sm: '0.65rem', lg: '0.65rem' }}}
-                >
-                  {formatDate(item.CreatedDate)}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ flex: "1 1 45%", textAlign: "left" ,  ml: 1, fontSize: { xs: '0.65rem', sm: '0.65rem', lg: '0.65rem' }}}
-                >
-                  {item.Quantity__c} {item.Description__c}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ flex: "1 1 35%", textAlign: "right",  ml: 1, fontSize: { xs: '0.65rem', sm: '0.65rem', lg: '0.65rem'} }}
-                >
-                  R {item.Sales_Price__c}
-                </Typography>
-                <IconButton
-                  size="small"
-                  onClick={() => handleOpenModal(item)}
-                  sx={{ ml: 0.5 }}
-                >
-                  <EditIcon />
-                </IconButton>
-              </Box>
-            ))}
-            <Button
-              startIcon={<AddIcon />}
-              variant="contained"
-              color="primary"
-              sx={{ mt: 2, backgroundColor: theme.palette.green.main, color: 'white' }} 
-              onClick={() => {
-                handleOpenModal(null)
-                findClothingBundleId(product.id)
-              }
-              }
-            >
-              Add Item
-            </Button>
-          </Box>
+                Add Item
+              </Button>
+            </Box>
+          )}
         </AccordionDetails>
       </Accordion>
       <ProductEditModal
