@@ -128,7 +128,6 @@ const ProductCard = ({ product, onAddItem, onEditItem, onDeleteItem,setClothingB
     }
   };
   
-  
   return (
     <>
       <Accordion

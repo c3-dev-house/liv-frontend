@@ -36,7 +36,7 @@ const Products = () => {
         const response = await axios.get(`/api/products/owned-products/${customerId}`);
         //const response = await axios.get(`/api/products/owned-products`); - used for hardcoded custId
         // console.log('Fetched products:', response.data);
-        // console.log("Response",response);
+        console.log("Response",response);
         //const { orders } = response.data;
         const soldProducts = response.data.map((product) => ({
           id: product.id,
