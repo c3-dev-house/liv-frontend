@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { Box, Typography, TextField, Avatar, Button,CircularProgress } from '@mui/material';
+import { Box, Typography, TextField, Avatar, Button,CircularProgress, Container} from '@mui/material';
 import ProfileHeader from '../components/profile/ProfileHeader'
 import axios from "../axiosConfig";
 import CustomAlert from '../components/CustomAlert';
@@ -58,13 +58,17 @@ const Profile = () => {
         onBack={() => window.history.back()}
         onEdit={handleEditToggle}
         showEdit={true}
+        
       />
+      {/*
       <Avatar
         src="/src/assets/pp.png" 
         alt="Profile"
         sx={{ width: 100, height: 100, mt: 2, mb: 2, borderRadius: '50%' }}
       />
-      <Typography variant="h6" gutterBottom>
+      */}
+      <Container  sx={{py:2, justifyContent: 'center', alignItems:'center'}}>
+      <Typography variant="h6" gutterBottom sx={{py:1}}>
         Username
       </Typography>
       <TextField
@@ -74,8 +78,9 @@ const Profile = () => {
         variant="outlined"
         fullWidth
         disabled
+        sx={{py:1}}
       />
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{py:1}}>
         About me
       </Typography>
       <TextField
@@ -86,8 +91,9 @@ const Profile = () => {
         fullWidth
         multiline
         disabled={!isEditing}
+        sx={{py:1}}
       />
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{py:1}}>
         Street address
       </Typography>
       <TextField
@@ -98,6 +104,7 @@ const Profile = () => {
         fullWidth
         disabled={!isEditing}
       />
+      </Container>
       {isEditing && (
         <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={()=>{
           handleEditToggle();
