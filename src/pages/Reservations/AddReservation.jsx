@@ -256,13 +256,7 @@ const confirmPaymentProcess = async () => {
             size="small"
           >
             <MenuItem value={"KZN"}>KZN</MenuItem>
-            <MenuItem value={"LP"}>LP</MenuItem>
-            <MenuItem value={"MP"}>MP</MenuItem>
-            <MenuItem value={"NC"}>NC</MenuItem>
-            <MenuItem value={"NW"}>NW</MenuItem>
-            <MenuItem value={"EC"}>EC</MenuItem>
-            <MenuItem value={"FS"}>FS</MenuItem>
-            <MenuItem value={"GAU"}>GAU</MenuItem>
+            
           </Select>
         </FormControl>
         <FormControl fullWidth sx={{ mb: 3, gap: 2 }} size="small">
