@@ -36,7 +36,7 @@ const Onboarding = () => {
     const { name, value } = e.target;
   
     // Replace non-letter and non-number characters with a space, except for birthDate
-    const sanitizedValue = name === 'birthDate' || name === 'email'
+    const sanitizedValue = name === 'birthDate' || name === 'email'|| name === 'province'
     ? value
     : name === 'mobileNumber'
       ? value.replace(/\D/g, '')
