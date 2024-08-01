@@ -36,7 +36,7 @@ const Onboarding = () => {
     const { name, value } = e.target;
   
     // Replace non-letter and non-number characters with a space, except for birthDate
-    const sanitizedValue = name === 'birthDate' || name === 'email'
+    const sanitizedValue = name === 'birthDate' || name === 'email'|| name === 'province'
     ? value
     : name === 'mobileNumber'
       ? value.replace(/\D/g, '')
@@ -220,7 +220,8 @@ const Onboarding = () => {
               value={formData.province}
               onChange={handleChange}
               className={`inputStyle ${formData.province ? 'blackText' : ''}`}
-            >
+            > 
+              <option value="">Select</option>
               {provinces.map((province, index) => (
                 <option key={index} value={province}>
                   {province}
