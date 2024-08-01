@@ -82,8 +82,8 @@ const ConfirmReservation = () => {
         alertOpen={alertOpen}
         setAlertOpen={setAlertOpen}
         severity="error"
-        message={errorMessage}
-        additionalMessage={`You can still order ${remainingQuantity} products.`}
+        message={errorMessage || "Error .  ."}
+        additionalMessage={remainingQuantity ? `You can still order ${remainingQuantity} products.`: ""}
       />
       <ShowReservation reservation={reservation} />
       <Box sx={{ display: "flex", justifyContent: "center", marginTop: 4 }}>

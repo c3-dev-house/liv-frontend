@@ -34,14 +34,15 @@ const Products = () => {
         const customerId = currentUser.Shopify_Id__c;
         const response = await axios.get(`/api/products/owned-products/${customerId}`);
         //const response = await axios.get(`/api/products/owned-products`); - used for hardcoded custId
-        // console.log('Fetched products:', response.data);
+         console.log('Fetched products:', response.data);
         // console.log("Response",response);
         //const { orders } = response.data;
         const soldProducts = response.data.map((product) => ({
           id: product.id,
           title: product.title,
           price: product.price,
-          createdAt: product.items[0].CreatedDate, //undefined?
+          //createdAt: product.items[0].CreatedDate, //undefined?
+          createdAt: product.date, //undefined?
           location: product.location,
           orderDate: product.date,
           orderTime: product.time,
