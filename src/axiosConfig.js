@@ -1,12 +1,11 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: '//localhost:3000', 
+  baseURL: '//localhost:3000/',
   //backend link for local: ...//localhost:3000/ 
   //old uat: //'http://liv-village-backend-env.eba-2jjmrubm.eu-west-3.elasticbeanstalk.com/'
   //new uat: https://liv.c3-dev-house.com/
   //link for prod: https://api.umthombomarketplace.co.za/
-
 });
 
 axiosInstance.interceptors.response.use(
