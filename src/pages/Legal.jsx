@@ -47,6 +47,12 @@ const Legal = () => {
         <Typography variant="body1" gutterBottom>
           All personal information is securely stored in Salesforce and Shopify. We do not use any other databases for storing your data. We have implemented appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.
         </Typography>
+        <Typography variant="body1" gutterBottom>
+        Data is processed in the AWS cloud, specifically within the Paris region. User data is stored on Salesforce instances located in Europe.
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          Personal information can be stored up to five years after a user deregisters from the application.
+        </Typography>
         <Typography variant="h6" gutterBottom>
           4. Sharing of Personal Information
         </Typography>
