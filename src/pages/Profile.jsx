@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { Box, Typography, TextField, Avatar, Button,CircularProgress, Container} from '@mui/material';
+import { Box, Typography, TextField, Avatar, Button,CircularProgress, Container, Link} from '@mui/material';
 import ProfileHeader from '../components/profile/ProfileHeader'
 import axios from "../axiosConfig";
 import CustomAlert from '../components/CustomAlert';
@@ -132,6 +132,9 @@ const Profile = () => {
         severity="error"
         message={errorMessage}
       />
+      <Typography variant="body2" sx={{ mt: 4, textAlign: 'center' }}>
+        At Umthombo Marketplace, we value your privacy and are committed to protecting your personal information in compliance with the Protection of Personal Information Act (POPIA). Click for more details. <Link href="/legal" underline="always">Legal page</Link>.
+      </Typography>
     </Box>
   );
 };

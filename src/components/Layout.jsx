@@ -33,6 +33,8 @@ import Beneficiaries from "../pages/Admin/Beneficiaries.jsx";
 import ReservationsAdmin from "../pages/Reservations/ReservationsAdmin.jsx";
 import BrandLineComponent from "./BrandLineComponent";
 import Onboarding from "../pages/Onboarding/Onboarding.jsx";
+import Legal from "../pages/Legal.jsx";
+
 import Spinner from "./Spinner.jsx";
 
 const Layout = ({ children }) => {
@@ -170,6 +172,9 @@ const Layout = ({ children }) => {
               <MenuItem onClick={() => handleNavigateTo("/products")}>
                 Products
               </MenuItem>
+              <MenuItem onClick={() => handleNavigateTo("/legal")}>
+                Legal
+              </MenuItem>
               <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
             </Menu>
           )}
@@ -257,6 +262,7 @@ const Layout = ({ children }) => {
             <Route path="/confirm-reservation" element={isAuthenticated  || isAdminAuthenticated ? <ConfirmReservation /> : <Navigate to="/signin" />} />
             <Route path="/products" element={isAuthenticated ? <Products /> : <Navigate to="/signin" />} />
             <Route path="/register" element={<Onboarding />} />
+            <Route path="/legal" element={<Legal />} />
           </Routes>
         </Box>
       )}
