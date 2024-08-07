@@ -54,13 +54,13 @@ const Onboarding = () => {
     console.log(codedMobileNumber)
 
     // Perform validations
-    if (!validateEmail(formData.email)) {
-      // alert("Please enter a valid email address.");
-      setValidationFail(true);
-      setValidationMessage("Please enter a valid email address.")
-      setLoading(false);
-      return;
-    }
+    // if (!validateEmail(formData.email)) {
+    //   // alert("Please enter a valid email address.");
+    //   setValidationFail(true);
+    //   setValidationMessage("Please enter a valid email address.")
+    //   setLoading(false);
+    //   return;
+    // }
     
     if (!validateRequiredFields(formData)) {
       // alert("Please fill in all required fields.");
