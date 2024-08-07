@@ -27,6 +27,7 @@ const Onboarding = () => {
     criminalRecord: "",
     relatedToLIV: "",
   });
+  const [consentGiven, setConsentGiven] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [validationFail, setValidationFail] = useState(false);
   const [validationMessage,setValidationMessage]=useState("");
@@ -45,9 +46,20 @@ const Onboarding = () => {
     setFormData({ ...formData, [name]: sanitizedValue });
   };
 
+  const handleCheckboxChange = (e) => {
+    setConsentGiven(e.target.checked);
+  };
+
   const handleSubmit =async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    if (!consentGiven) {
+      setValidationFail(true);
+      setValidationMessage("You must consent to the storage of your personal information.");
+      setLoading(false);
+      return;
+    }
 
     const originalMobileNumber = formData.mobileNumber;
     const codedMobileNumber = addZACode(formData.mobileNumber);
@@ -333,10 +345,20 @@ const Onboarding = () => {
               <option value="No">No</option>
             </select>
           </div>
+          <div className='formGroup'>
+            <label className="labelStyle">
+              <input
+                type="checkbox"
+                checked={consentGiven}
+                onChange={handleCheckboxChange}
+              />
+              <span className="checkboxLabel"> I consent to the storage of my personal information.</span>
+            </label>
+          </div>
           {validationFail && (
             <div style={{ marginBottom: "10px" }}>
               <Alert severity="warning">
-                <AlertTitle>Incorrect Field</AlertTitle>
+                <AlertTitle>Incorrect or Missing Field</AlertTitle>
                 {validationMessage}
               </Alert>
             </div>
