@@ -112,7 +112,7 @@ const Onboarding = () => {
   const validateRequiredFields = (data) => {
     const requiredFields = [
       "name", "surname", "idNumber", "birthDate", "gender", "mobileNumber", "city", "streetAddress", 
-      "province", "email", "race", "numberOfChildren", "disabilities", "criminalRecord", "relatedToLIV"
+      "province", "race", "numberOfChildren", "disabilities", "criminalRecord", "relatedToLIV"
     ];
     return requiredFields.every(field => data[field].trim() !== "");
   };
@@ -272,7 +272,7 @@ const Onboarding = () => {
             />
           </div>
           <div className='formGroup'>
-            {renderLabel("Email", true)}
+            {renderLabel("Email", false)}
             <input
               type="email"
               name="email"
